@@ -51,6 +51,9 @@ h1 em{font-style:italic;color:var(--terracotta)}
 .fkey{font-size:11px;letter-spacing:.1em;color:var(--faint);margin-bottom:5px;text-transform:uppercase}
 .fval{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--ink);line-height:1.6}
 .otext{font-size:13px;line-height:1.9;color:var(--ink-mid);white-space:pre-wrap;word-break:break-word}
+/* CTA 特別樣式：把連結佔位符高亮 */
+.cta-link-placeholder{display:inline-block;background:var(--bg2);border:1px dashed var(--terracotta);color:var(--terracotta);padding:1px 6px;font-size:12px;letter-spacing:.04em;border-radius:2px}
+.cta-hint{font-size:11px;color:var(--faint);margin-top:10px;padding:8px 12px;border-left:2px solid var(--border);line-height:1.7}
 .download-btn{width:100%;padding:15px;background:var(--terracotta);color:white;border:none;font-family:'Noto Serif TC',serif;font-size:14px;letter-spacing:.06em;cursor:pointer;transition:background .3s;margin-top:6px}
 .download-btn:hover{background:var(--ink)}
 .loading::after{content:'';animation:dots 1.2s infinite}
@@ -146,7 +149,10 @@ h1 em{font-style:italic;color:var(--terracotta)}
   </div>
   <div class="result-card" id="card-cta" style="display:none">
     <div class="card-header"><div class="card-title">文章結尾 CTA</div><button class="copy-btn" onclick="copyEl('cta-text',this)">複製</button></div>
-    <div class="card-body"><div class="otext" id="cta-text"></div></div>
+    <div class="card-body">
+      <div class="otext" id="cta-text"></div>
+      <div class="cta-hint">👆 把 <span style="color:var(--terracotta);font-weight:400">[連結]</span> 換成你的 Landing Page 網址後，直接貼到文章結尾。</div>
+    </div>
   </div>
   <div class="result-card" id="card-email" style="display:none">
     <div class="card-header"><div class="card-title">Kit 歡迎信文案</div><button class="copy-btn" onclick="copyEmail(this)">複製</button></div>
@@ -162,7 +168,6 @@ h1 em{font-style:italic;color:var(--terracotta)}
 <script>
 let pageData=null;
 
-// 記住 API key
 window.addEventListener('load', () => {
   const saved = localStorage.getItem('anthropic_key');
   if (saved) document.getElementById('ai-key').value = saved;
@@ -185,6 +190,7 @@ async function runAI(){
   const btn=document.getElementById('ai-btn');
   btn.innerHTML='<span class="loading">AI 分析中</span>';
   btn.disabled=true;
+
   const prompt=`你是許藍方的內容助理。許藍方是一位希塔療癒導師和關係靈氣療癒師，文字風格溫暖、直接、有詩意，說話像一個真實的人，不像行銷。
 
 你的任務是根據以下文章，生成「${lead}」的 Landing Page 所有文案。
@@ -227,11 +233,12 @@ ${article}
   "success_t1": "成功畫面標題第一部分，簡短",
   "success_em": "斜體強調詞，溫暖",
   "success_body": "成功後說的話，像朋友說的，三行內",
-  "cta": "文章結尾引流段落，2-4句，自然承接文章最後的情緒，帶出引流品，不要銷售感，最後告訴讀者怎麼拿（留言或私訊關鍵字）",
+  "cta": "文章結尾引流段落，共三段用換行分隔。\n第一段：2-3句溫暖的話，承接文章最後的情緒，不要突然轉成行銷語氣，讓讀者感覺被理解。\n第二段：一句自然帶出這份資源，然後是連結佔位符 [連結] ，文字像是在說「這裡有個地方可以去看看」。\n第三段：一句提醒，例如：填完之後記得去垃圾郵件找，或把信件標記為重要。\n整體不超過100字，沒有銷售感。",
   "email_subject": "歡迎信主旨，有溫度，帶入 {{ subscriber.first_name }}，不要用感謝訂閱",
   "email_body": "歡迎信正文。以 {{ subscriber.first_name }}，你好 開頭。參考好範例的風格。2-3句說為什麼填這個表示什麼，說這份資源怎麼用，最後邀請對方直接回信說感受。署名藍方。不超過120字。語氣像朋友寫的信，不像電子報。",
-  "confirm_btn": "Kit確認信按鈕文字，呼應這篇文章的核心情緒，像一個內心的宣告，參考好範例風格，10字內，絕對不用確認訂閱領取索取這類字眼"
+  "confirm_btn": "Kit確認信的按鈕文字。背景：讀者填完表單後會收到一封確認信，需要點這個按鈕才算完成訂閱。\n目標：讓讀者看到這個按鈕時，不是感覺「我要完成一個手續」，而是感覺「我想點這個」——像是一個對自己的宣告，或是對某件事的回應。\n要求：呼應這篇文章的核心情緒，10字內，結尾不加「確認」「訂閱」「領取」「索取」這類字眼，可以加 →。\n範例風格：「我準備好了 →」「是的，我想看見 →」「帶我去那裡 →」「我想停在這裡 →」"
 }`;
+
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
@@ -242,8 +249,20 @@ ${article}
     if(!res.ok||data.error)throw new Error(data.error?.message||'API 錯誤 '+res.status);
     const r=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
     pageData={...r,kitId,name:'許藍方',title:'希塔療癒導師・關係靈氣療癒師'};
-    document.getElementById('landing-text').innerHTML=`<div class="frr"><div class="fkey">主標題</div><div class="fval">${r.t1} / <em>${r.t2}</em></div></div><div class="frr"><div class="fkey">副標題</div><div class="fval">${r.sub}</div></div><div class="frr"><div class="fkey">金句</div><div class="fval">「${r.quote}」</div></div><div class="frr"><div class="fkey">賣點</div><div class="fval">${r.gets.map(g=>`${g.icon} ${g.name}：${g.desc}`).join('<br>')}</div></div><div class="frr"><div class="fkey">按鈕</div><div class="fval">${r.btn}</div></div><div class="frr"><div class="fkey">Kit 確認信按鈕</div><div class="fval" id="confirm-btn-text">${r.confirm_btn}</div></div>`;
-    document.getElementById('cta-text').textContent=r.cta;
+
+    document.getElementById('landing-text').innerHTML=`
+      <div class="frr"><div class="fkey">主標題</div><div class="fval">${r.t1} / <em>${r.t2}</em></div></div>
+      <div class="frr"><div class="fkey">副標題</div><div class="fval">${r.sub}</div></div>
+      <div class="frr"><div class="fkey">金句</div><div class="fval">「${r.quote}」</div></div>
+      <div class="frr"><div class="fkey">賣點</div><div class="fval">${r.gets.map(g=>`${g.icon} ${g.name}：${g.desc}`).join('<br>')}</div></div>
+      <div class="frr"><div class="fkey">表單按鈕</div><div class="fval">${r.btn}</div></div>
+      <div class="frr"><div class="fkey">Kit 確認信按鈕</div><div class="fval" id="confirm-btn-text">${r.confirm_btn}</div></div>
+    `;
+
+    // CTA：把 [連結] 高亮顯示
+    const ctaFormatted = r.cta.replace(/\[連結\]/g, '<span class="cta-link-placeholder">[連結]</span>');
+    document.getElementById('cta-text').innerHTML = ctaFormatted;
+
     document.getElementById('email-subject').textContent=r.email_subject;
     document.getElementById('email-body').textContent=r.email_body;
     ['card-landing','card-cta','card-email'].forEach(id=>document.getElementById(id).style.display='block');
@@ -398,7 +417,10 @@ async function submitForm(e){
 }
 
 function copyEl(id,btn){
-  navigator.clipboard.writeText(document.getElementById(id).innerText).then(()=>{
+  // 複製純文字，不含 HTML 標籤
+  const el = document.getElementById(id);
+  const text = el.innerText || el.textContent;
+  navigator.clipboard.writeText(text).then(()=>{
     btn.textContent='已複製 ✓';btn.classList.add('copied');
     setTimeout(()=>{btn.textContent='複製';btn.classList.remove('copied');},2000);
   });
