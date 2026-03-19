@@ -125,6 +125,7 @@ header{padding:36px 0 24px;border-bottom:1px solid var(--border);margin-bottom:3
       <div class="field"><label>Kit 表單 ID</label><input type="text" id="ai-kit" placeholder="例如：9141329"></div>
     </div>
     <div class="field"><label>Anthropic API Key（只存在瀏覽器，不會外傳）</label><input type="password" id="ai-key" placeholder="sk-ant-..."></div>
+    <div class="field"><label>模型選擇</label><select id="ai-model" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);background:white;font-family:'Noto Serif TC',serif;font-size:14px;color:var(--ink);outline:none"><option value="claude-haiku-4-5-20251001">Haiku（省配額・速度快）</option><option value="claude-sonnet-4-20250514">Sonnet（品質較高・消耗較多）</option></select></div>
   </div>
   <div class="section">
     <span class="section-label">貼入文章</span>
@@ -214,6 +215,7 @@ header{padding:36px 0 24px;border-bottom:1px solid var(--border);margin-bottom:3
       </div>
     </div>
     <div class="field"><label>Anthropic API Key</label><input type="password" id="reply-key" placeholder="sk-ant-..."></div>
+    <div class="field"><label>模型選擇</label><select id="reply-model" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);background:white;font-family:'Noto Serif TC',serif;font-size:14px;color:var(--ink);outline:none"><option value="claude-haiku-4-5-20251001">Haiku（省配額・速度快）</option><option value="claude-sonnet-4-20250514">Sonnet（品質較高・消耗較多）</option></select></div>
   </div>
   <button class="generate-btn" id="reply-btn" onclick="runReply()">生成 3 則回覆選項</button>
   <div class="results" id="results-reply">
@@ -231,6 +233,8 @@ let pageData=null, assetSummary=null;
 window.addEventListener('load',()=>{
   const k=localStorage.getItem('anthropic_key');
   if(k){document.getElementById('ai-key').value=k;document.getElementById('reply-key').value=k;}
+  const m=localStorage.getItem('claude_model')||'claude-haiku-4-5-20251001';
+  document.getElementById('ai-model').value=m;document.getElementById('reply-model').value=m;
   updateContextStatus();
   document.getElementById('stage-chips').addEventListener('click',e=>{
     const c=e.target.closest('.chip');if(!c)return;
@@ -248,6 +252,13 @@ document.addEventListener('input',e=>{
     const v=e.target.value;
     localStorage.setItem('anthropic_key',v);
     document.getElementById(e.target.id==='ai-key'?'reply-key':'ai-key').value=v;
+  }
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='ai-model'||e.target.id==='reply-model'){
+    const v=e.target.value;
+    localStorage.setItem('claude_model',v);
+    document.getElementById(e.target.id==='ai-model'?'reply-model':'ai-model').value=v;
   }
 });
 function switchEngine(e){
@@ -270,6 +281,7 @@ async function runAssets(){
   const lead=document.getElementById('ai-lead').value.trim()||'免費資源';
   const kitId=document.getElementById('ai-kit').value.trim();
   const apiKey=document.getElementById('ai-key').value.trim();
+  const model=document.getElementById('ai-model').value;
   if(!article)return alert('請先貼入文章內容');
   if(!apiKey)return alert('請填入 Anthropic API Key');
   const btn=document.getElementById('ai-btn');
@@ -344,10 +356,16 @@ ${article}
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model,max_tokens:4000,messages:[{role:'user',content:prompt}]})
     });
     const data=await res.json();
-    if(!res.ok||data.error)throw new Error(data.error?.message||'API 錯誤 '+res.status);
+    if(!res.ok||data.error){
+      const msg=data.error?.message||'API 錯誤 '+res.status;
+      if(msg.includes('quota')||msg.includes('credit')||msg.includes('billing')||res.status===429){
+        throw new Error('API 配額已用完。請至 console.anthropic.com 充值或升級方案，或切換到 Haiku 模型節省配額。');
+      }
+      throw new Error(msg);
+    }
     const r=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
     pageData={...r,kitId,name:'許藍方',title:'希塔療癒導師・關係靈氣療癒師'};
     assetSummary={lead,article_summary:r.article_summary};
@@ -444,6 +462,7 @@ async function runReply(){
   const message=document.getElementById('reply-message').value.trim();
   const extra=document.getElementById('reply-context-extra').value.trim();
   const apiKey=document.getElementById('reply-key').value.trim();
+  const model=document.getElementById('reply-model').value;
   const stage=document.querySelector('#stage-chips .chip.active-stage')?.dataset.v||'初次接觸';
   const tone=document.querySelector('#tone-chips .chip.active-tone')?.dataset.v||'溫暖陪伴';
   if(!message)return alert('請貼入對方的訊息');
@@ -483,10 +502,16 @@ ${ctx?`【文章脈絡】\n${ctx}\n`:''}【對話設定】
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model,max_tokens:1200,messages:[{role:'user',content:prompt}]})
     });
     const data=await res.json();
-    if(!res.ok||data.error)throw new Error(data.error?.message||'API 錯誤 '+res.status);
+    if(!res.ok||data.error){
+      const msg=data.error?.message||'API 錯誤 '+res.status;
+      if(msg.includes('quota')||msg.includes('credit')||msg.includes('billing')||res.status===429){
+        throw new Error('API 配額已用完。請至 console.anthropic.com 充值或升級方案，或切換到 Haiku 模型節省配額。');
+      }
+      throw new Error(msg);
+    }
     const r=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
     document.getElementById('reply-options').innerHTML=r.replies.map(rep=>`
       <div class="reply-option">
