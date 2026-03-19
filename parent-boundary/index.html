@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>你不是不愛孩子，你只是沒人教過你，怎麼愛得有界線</title>
+<meta name="description" content="你懂道理，卻在孩子情緒面前一再失守。不是技巧不夠，是底層信念還在卡你。三個情境的句型範本，讓你開口就對了。">
+<meta property="og:title" content="你不是不愛孩子，你只是沒人教過你，怎麼愛得有界線">
+<meta property="og:description" content="孩子一哭你就心軟，一鬧你就改規則——這不是你的錯，這是從來沒被修正過的舊模式。">
+<meta property="og:type" content="website"><meta property="og:locale" content="zh_TW">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FBF8F3;--bg2:#F4EBE0;--ink:#261408;--ink-mid:#5A3520;--rust:#9B4A2A;--gold:#A87830;--muted:#8C6040;--faint:#BFA080;--border:#E2D0BA}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Serif TC',serif;font-weight:300;overflow-x:hidden}
+.wrap{max-width:600px;margin:0 auto;padding:0 28px}
+header{padding:40px 0 0;opacity:0;animation:up 0.7s 0.1s ease forwards}
+.site-tag{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;letter-spacing:.12em;color:var(--muted)}
+.hero{padding:52px 0 44px}
+.hero-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--rust);margin-bottom:28px;opacity:0;animation:up 0.7s 0.2s ease forwards}
+.hero-label::before{content:'';display:block;width:24px;height:1px;background:var(--rust)}
+h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(36px,8vw,58px);line-height:1.2;color:var(--ink);margin-bottom:10px;opacity:0;animation:up 0.7s 0.3s ease forwards}
+h1 em{font-style:italic;color:var(--rust)}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(15px,3vw,19px);color:var(--muted);margin-bottom:36px;line-height:1.7;opacity:0;animation:up 0.7s 0.4s ease forwards}
+.pull{border-left:2px solid var(--rust);padding:18px 22px;margin-bottom:32px;background:var(--bg2);opacity:0;animation:up 0.7s 0.5s ease forwards}
+.pull p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(15px,3vw,19px);line-height:1.85;color:var(--ink-mid)}
+.pull cite{display:block;margin-top:10px;font-size:12px;letter-spacing:.1em;color:var(--faint);font-style:normal}
+
+/* pain points */
+.pain{margin-bottom:44px;opacity:0;animation:up 0.7s 0.52s ease forwards}
+.pain-title{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.pain-list{list-style:none;display:flex;flex-direction:column;gap:0}
+.pain-list li{padding:14px 0;border-bottom:1px solid var(--border);font-size:14.5px;line-height:1.8;color:var(--ink-mid);display:flex;gap:14px;align-items:flex-start}
+.pain-list li:first-child{border-top:1px solid var(--border)}
+.pain-list li::before{content:'✓';color:var(--rust);font-size:13px;flex-shrink:0;margin-top:3px}
+
+/* what you get */
+.gets{margin-bottom:48px;opacity:0;animation:up 0.7s 0.55s ease forwards}
+.gets-title{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.get-item{display:flex;gap:18px;padding:18px 0;border-bottom:1px solid var(--border)}
+.get-item:first-of-type{border-top:1px solid var(--border)}
+.get-icon{font-size:20px;flex-shrink:0;padding-top:2px}
+.get-name{font-size:15px;color:var(--ink);margin-bottom:4px;font-weight:400}
+.get-desc{font-size:13px;color:var(--muted);line-height:1.8}
+
+/* scenario preview */
+.scenario{margin-bottom:48px;opacity:0;animation:up 0.7s 0.58s ease forwards}
+.scenario-title{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.scene{background:var(--bg2);border:1px solid var(--border);padding:22px 24px;margin-bottom:12px;position:relative}
+.scene-label{font-size:11px;letter-spacing:.12em;color:var(--rust);margin-bottom:12px;font-weight:400}
+.scene-row{display:flex;gap:12px;margin-bottom:6px;align-items:flex-start;font-size:13.5px;line-height:1.75}
+.scene-row:last-child{margin-bottom:0}
+.scene-tag{flex-shrink:0;font-size:11px;letter-spacing:.06em;padding:2px 7px;border:1px solid var(--border);color:var(--faint)}
+.scene-tag.new{border-color:var(--rust);color:var(--rust)}
+.scene-text{color:var(--ink-mid)}
+.scene-text.new{color:var(--ink);font-weight:400}
+.blur-hint{text-align:center;padding:18px 0 8px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--faint)}
+
+/* form */
+.form-box{background:white;border:1px solid var(--border);padding:40px 36px;margin-bottom:60px;opacity:0;animation:up 0.7s 0.65s ease forwards;position:relative;overflow:hidden;box-shadow:0 2px 20px rgba(90,40,10,.06)}
+.form-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--rust),var(--gold))}
+.form-title{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,26px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.form-note{font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.9}
+.field{margin-bottom:12px}.field label{display:block;font-size:12px;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+.field input{display:block;width:100%;padding:13px 16px;border:1.5px solid var(--border);background:var(--bg);font-family:'Noto Serif TC',serif;font-size:15px;color:var(--ink);outline:none;transition:border-color .2s}
+.field input:focus{border-color:var(--rust)}.field input::placeholder{color:var(--faint)}
+.submit-btn{display:block;width:100%;margin-top:16px;padding:16px;background:var(--ink);color:white;border:none;font-family:'Noto Serif TC',serif;font-size:15px;letter-spacing:.06em;cursor:pointer;transition:background .3s}
+.submit-btn:hover{background:var(--rust)}
+.privacy{margin-top:14px;font-size:11px;color:var(--faint);text-align:center;letter-spacing:.05em}
+.success{display:none;text-align:center;padding:12px 0}
+.success-icon{font-size:40px;margin-bottom:20px}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,5vw,34px);font-weight:400;color:var(--ink);margin-bottom:16px;line-height:1.4}
+.success-title em{font-style:italic;color:var(--rust)}
+.success-body{font-size:14px;color:var(--ink-mid);line-height:1.95;margin-bottom:20px;white-space:pre-line}
+.success-note{font-size:12px;color:var(--faint);line-height:1.8;padding:14px 18px;border:1px solid var(--border)}
+
+footer{padding:32px 0 52px;border-top:1px solid var(--border);opacity:0;animation:up 0.7s 0.75s ease forwards}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-name{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--muted)}
+.footer-note{font-size:11px;color:var(--faint);line-height:1.8;text-align:right}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@media(max-width:480px){.form-box{padding:28px 20px}.footer-inner{flex-direction:column;align-items:flex-start}.footer-note{text-align:left}.scene{padding:18px 16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="site-tag">許藍方・希塔療癒導師・關係靈氣療癒師</div></header>
+
+<section class="hero">
+  <div class="hero-label">免費資源</div>
+  <h1>你不是不愛孩子<br><em>你只是沒人教過你</em><br>怎麼愛得有界線</h1>
+  <p class="hero-sub">孩子一哭你就心軟，一鬧你就改規則——這不是你的錯，這是從來沒被修正過的舊模式</p>
+  <div class="pull">
+    <p>「你送給孩子最深的禮物，不是替他移開每一塊石頭——而是陪他長出走過石頭的力量。」</p>
+    <cite>—— 摘自本文</cite>
+  </div>
+
+  <div class="pain">
+    <div class="pain-title">你是不是也這樣</div>
+    <ul class="pain-list">
+      <li>孩子一哭，你就開始懷疑自己是不是做錯了</li>
+      <li>你說好的規則，孩子一鬧，你自己先改了</li>
+      <li>你知道應該要設界線，但一說出口就覺得自己很冷</li>
+      <li>每次想堅持，卻在孩子的眼淚裡撐不住</li>
+      <li>你懂道理，但在現場還是一再失守</li>
+    </ul>
+  </div>
+
+  <div class="gets">
+    <div class="gets-title">領取後你會收到</div>
+    <div class="get-item"><div class="get-icon">🗣️</div><div><div class="get-name">三個情境的完整句型</div><div class="get-desc">孩子拒絕外出、輸了很難受、和朋友吵架——每種情況各有一套可以直接開口的回應範本</div></div></div>
+    <div class="get-item"><div class="get-icon">🧱</div><div><div class="get-name">「先同理、再設界線」框架</div><div class="get-desc">怎麼讓孩子感受到被看見，同時又守住你的位置，兩件事一起做</div></div></div>
+    <div class="get-item"><div class="get-icon">💬</div><div><div class="get-name">快要妥協時的三句話</div><div class="get-desc">當內疚感湧上來、快要失守的那一刻，對自己說這三句話，慢慢重寫舊反應</div></div></div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-title">句型長這樣</div>
+    <div class="scene">
+      <div class="scene-label">場景 1｜孩子不想外出</div>
+      <div class="scene-row"><span class="scene-tag">舊反應</span><span class="scene-text">「好啦好啦，那我們不去了。」</span></div>
+      <div class="scene-row"><span class="scene-tag new">新句型</span><span class="scene-text new">「我知道你真的不想去，這個感覺很合理。但今天我們還是會去，我會陪你一起度過這段不想去的感覺。」</span></div>
+    </div>
+    <div class="scene">
+      <div class="scene-label">場景 2｜孩子輸了比賽很難受</div>
+      <div class="scene-row"><span class="scene-tag">舊反應</span><span class="scene-text">「沒關係啦，下次會贏！」</span></div>
+      <div class="scene-row"><span class="scene-tag new">新句型</span><span class="scene-text new">「這次真的很難受，輸了本來就會失落。你可以難過，我陪你——但我們不用急著把這個感覺趕走。」</span></div>
+    </div>
+    <div class="scene" style="filter:blur(3.5px);user-select:none;pointer-events:none">
+      <div class="scene-label">場景 3｜孩子和朋友吵架</div>
+      <div class="scene-row"><span class="scene-tag">舊反應</span><span class="scene-text">「那個朋友太過分了，我幫你去講。」</span></div>
+      <div class="scene-row"><span class="scene-tag new">新句型</span><span class="scene-text new">填上你的 Email 後解鎖完整版本</span></div>
+    </div>
+    <p class="blur-hint">填 Email 解鎖第三個情境 + 完整框架說明</p>
+  </div>
+</section>
+
+<div class="form-box">
+  <div id="form-area">
+    <div class="form-title">我想要這份句型指南</div>
+    <p class="form-note">填完後立刻收到完整版本，包含三個情境句型、框架說明，以及快要妥協時可以對自己說的話</p>
+    <form id="kit-form" onsubmit="submitForm(event)">
+      <div class="field"><label>你的名字</label><input type="text" name="first_name" placeholder="請輸入名字" required></div>
+      <div class="field"><label>Email 信箱</label><input type="email" name="email_address" placeholder="請輸入有效的 Email" required></div>
+      <!-- ★ 請將下方 form action 的 ConvertKit 表單 ID 換成你的 -->
+      <button type="submit" class="submit-btn">我想學會有愛又有界線 →</button>
+    </form>
+    <p class="privacy">🔒 你的資訊不會被分享給任何第三方</p>
+  </div>
+  <div class="success" id="success-area">
+    <div class="success-icon">✉️</div>
+    <div class="success-title">已經寄到你信箱了<em>，真的</em></div>
+    <p class="success-body">去收信匣找找看，有時候會跑到垃圾信件。
+如果沒看到，直接回信給我就好。
+
+記住一件事：你不需要靠犧牲自己的界線，來證明自己是好父母。</p>
+    <div class="success-note">找不到信？記得檢查垃圾郵件資料夾，或把許藍方的 email 加入聯絡人。</div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-name">許藍方</div>
+    <div class="footer-note">填寫即同意接收電子報<br>你的 email 不會分享給任何第三方</div>
+  </div>
+</footer>
+</div>
+
+<script>
+// ★ 請將 FORM_ID 換成你在 ConvertKit / Kit 後台的表單 ID
+const FORM_ID = 'YOUR_FORM_ID';
+
+async function submitForm(e){
+  e.preventDefault();
+  const btn = e.target.querySelector('button');
+  btn.textContent = '準備中⋯';
+  btn.disabled = true;
+  try {
+    await fetch(`https://app.convertkit.com/forms/${FORM_ID}/subscriptions`, {
+      method: 'POST',
+      body: new FormData(e.target),
+      mode: 'no-cors'
+    });
+  } catch(err) {}
+  document.getElementById('form-area').style.display = 'none';
+  const s = document.getElementById('success-area');
+  s.style.display = 'block';
+  s.style.animation = 'fadeIn 0.5s ease forwards';
+}
+</script>
+</body>
+</html>
