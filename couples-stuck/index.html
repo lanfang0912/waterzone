@@ -307,7 +307,10 @@ window.addEventListener('DOMContentLoaded', () => {
     resultType = type;
     document.getElementById('start-section').style.display = 'none';
     document.getElementById('result-section').style.display = 'block';
-    showResultArea();
+    // 從 email 連結進來，直接顯示完整解讀，不用再填表單
+    showResultArea(true);
+    document.querySelector('.form-box').style.display = 'none';
+    showFullResult();
   }
 });
 
@@ -354,7 +357,7 @@ function selectOption(score, part, btn) {
   }, 380);
 }
 
-function showResultArea() {
+function showResultArea(hideTeaser) {
   const t = typeInfo[resultType];
   document.getElementById('result-type-area').innerHTML = `
     <div class="result-type-badge">
@@ -362,7 +365,7 @@ function showResultArea() {
       <div class="type-name"><strong>${t.name}</strong>${t.short}</div>
     </div>
     <div class="result-pull"><p>${t.core}</p></div>
-    <p class="result-teaser">填入 email，收到完整解讀——包含你的底層信念說明、三道自我覺察練習，以及給你的新信念。</p>
+    ${hideTeaser ? '' : '<p class="result-teaser">填入 email，收到完整解讀——包含你的底層信念說明、三道自我覺察練習，以及給你的新信念。</p>'}
   `;
 }
 
