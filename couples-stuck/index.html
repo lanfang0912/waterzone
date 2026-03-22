@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>你是拼命敲門的人，還是拼命鎖門的人？｜親密關係卡點測驗</title>
+<meta name="description" content="12 題親密關係卡點測驗，找出你在關係裡是哪一型的卡點。做完填 email 領完整版《親密關係卡點自我檢查表》。">
+<meta property="og:title" content="你是拼命敲門，還是拼命鎖門？｜許藍方">
+<meta property="og:description" content="12 題測驗，找出你在親密關係裡的卡點位置。做完填 email 領完整版《親密關係卡點自我檢查表》。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FBF7F2;
+  --bg2: #F4EDE0;
+  --ink: #2A1A0A;
+  --ink-mid: #5C3D1E;
+  --rust: #B85C38;
+  --gold: #B8873A;
+  --muted: #9C7A55;
+  --faint: #C4A882;
+  --border: #E2D4C0;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+.wrap { max-width: 600px; margin: 0 auto; padding: 0 28px; }
+
+/* header */
+header { padding: 40px 0 0; opacity: 0; animation: up 0.7s 0.1s ease forwards; }
+.site-tag { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; letter-spacing: 0.12em; color: var(--muted); }
+
+/* hero */
+.hero { padding: 48px 0 40px; }
+.hero-label { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rust); margin-bottom: 24px; opacity: 0; animation: up 0.7s 0.2s ease forwards; }
+.hero-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--rust); }
+h1 { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: clamp(34px, 7.5vw, 54px); line-height: 1.2; color: var(--ink); margin-bottom: 10px; opacity: 0; animation: up 0.7s 0.3s ease forwards; }
+h1 em { font-style: italic; color: var(--rust); }
+.hero-sub { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(15px, 3vw, 19px); color: var(--muted); margin-bottom: 32px; line-height: 1.7; opacity: 0; animation: up 0.7s 0.4s ease forwards; }
+.pull { border-left: 2px solid var(--rust); padding: 16px 20px; margin-bottom: 36px; background: var(--bg2); opacity: 0; animation: up 0.7s 0.5s ease forwards; }
+.pull p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(15px, 3vw, 18px); line-height: 1.85; color: var(--ink-mid); }
+.pull cite { display: block; margin-top: 8px; font-size: 11.5px; letter-spacing: 0.1em; color: var(--faint); font-style: normal; }
+
+/* start section */
+.start-box { background: white; border: 1px solid var(--border); padding: 36px 32px; margin-bottom: 60px; position: relative; overflow: hidden; box-shadow: 0 2px 20px rgba(90,50,20,0.06); opacity: 0; animation: up 0.7s 0.6s ease forwards; }
+.start-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--rust), var(--gold)); }
+.start-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(18px, 4vw, 23px); font-weight: 400; color: var(--ink); margin-bottom: 14px; line-height: 1.5; }
+.start-desc { font-size: 13.5px; color: var(--muted); line-height: 1.95; margin-bottom: 10px; }
+.start-note { font-size: 12px; color: var(--faint); line-height: 1.8; margin-bottom: 28px; }
+.start-btn { display: block; width: 100%; padding: 15px; background: var(--ink); color: white; border: none; font-family: 'Noto Serif TC', serif; font-size: 15px; letter-spacing: 0.06em; cursor: pointer; transition: background 0.3s; text-align: center; }
+.start-btn:hover { background: var(--rust); }
+
+/* quiz section */
+#quiz-section { display: none; margin-bottom: 60px; }
+.progress-bar-wrap { margin-bottom: 32px; }
+.progress-meta { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--faint); letter-spacing: 0.08em; margin-bottom: 8px; }
+.progress-track { height: 2px; background: var(--border); position: relative; }
+.progress-fill { height: 2px; background: linear-gradient(90deg, var(--rust), var(--gold)); transition: width 0.4s ease; width: 0%; }
+
+.question-card { opacity: 0; animation: up 0.5s ease forwards; }
+.q-label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rust); margin-bottom: 18px; }
+.q-text { font-family: 'Cormorant Garamond', serif; font-size: clamp(18px, 4vw, 23px); font-weight: 400; line-height: 1.6; color: var(--ink); margin-bottom: 32px; }
+.options { display: flex; flex-direction: column; gap: 10px; }
+.opt-btn {
+  padding: 14px 18px;
+  border: 1.5px solid var(--border);
+  background: white;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 14px;
+  color: var(--ink-mid);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  line-height: 1.5;
+}
+.opt-btn:hover { border-color: var(--rust); background: var(--bg2); }
+.opt-btn.selected { border-color: var(--rust); background: var(--bg2); color: var(--ink); }
+.opt-btn .opt-score { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.1em; color: var(--faint); flex-shrink: 0; min-width: 48px; }
+.opt-btn.selected .opt-score { color: var(--rust); }
+
+/* result section */
+#result-section { display: none; margin-bottom: 60px; }
+.result-type-badge { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.type-letter { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 400; color: var(--rust); line-height: 1; }
+.type-name { font-size: 13px; color: var(--ink-mid); line-height: 1.7; }
+.type-name strong { display: block; font-size: 16px; color: var(--ink); font-weight: 400; margin-bottom: 2px; }
+.result-pull { border-left: 2px solid var(--rust); padding: 16px 20px; margin-bottom: 28px; background: var(--bg2); }
+.result-pull p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(15px, 3vw, 18px); line-height: 1.85; color: var(--ink-mid); }
+.result-teaser { font-size: 14px; color: var(--muted); line-height: 1.9; margin-bottom: 32px; }
+
+/* form box */
+.form-box { background: white; border: 1px solid var(--border); padding: 36px 32px; position: relative; overflow: hidden; box-shadow: 0 2px 20px rgba(90,50,20,0.06); }
+.form-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--rust), var(--gold)); }
+.form-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(19px, 4vw, 24px); font-weight: 400; color: var(--ink); margin-bottom: 6px; line-height: 1.4; }
+.form-note { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.9; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
+.field input { display: block; width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); background: var(--bg); font-family: 'Noto Serif TC', serif; font-size: 15px; color: var(--ink); outline: none; transition: border-color 0.2s; }
+.field input:focus { border-color: var(--rust); }
+.field input::placeholder { color: var(--faint); }
+.submit-btn { display: block; width: 100%; margin-top: 16px; padding: 15px; background: var(--ink); color: white; border: none; font-family: 'Noto Serif TC', serif; font-size: 15px; letter-spacing: 0.06em; cursor: pointer; transition: background 0.3s; }
+.submit-btn:hover { background: var(--rust); }
+.privacy { margin-top: 12px; font-size: 11px; color: var(--faint); text-align: center; letter-spacing: 0.05em; }
+
+/* success */
+.success { display: none; }
+.success-icon { font-size: 38px; margin-bottom: 18px; }
+.success-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(22px, 5vw, 32px); font-weight: 400; color: var(--ink); margin-bottom: 14px; line-height: 1.4; }
+.success-title em { font-style: italic; color: var(--rust); }
+.success-body { font-size: 14px; color: var(--ink-mid); line-height: 1.95; margin-bottom: 16px; white-space: pre-line; }
+.success-note { font-size: 12px; color: var(--faint); line-height: 1.8; padding: 14px 18px; border: 1px solid var(--border); }
+
+/* full result */
+#full-result { display: none; margin-top: 40px; }
+.full-result-title { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+.belief-section { margin-bottom: 28px; }
+.belief-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rust); margin-bottom: 12px; }
+.belief-body { font-size: 14px; color: var(--ink-mid); line-height: 1.95; }
+.belief-body strong { color: var(--ink); font-weight: 400; }
+.reflect-q { padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--ink-mid); line-height: 1.8; display: flex; gap: 12px; }
+.reflect-q:first-of-type { border-top: 1px solid var(--border); }
+.reflect-num { color: var(--rust); flex-shrink: 0; font-family: 'Cormorant Garamond', serif; font-size: 16px; }
+.new-belief { padding: 14px 18px; background: var(--bg2); border-left: 2px solid var(--gold); margin-bottom: 10px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(14px, 3vw, 16px); color: var(--ink-mid); line-height: 1.8; }
+.closing { margin-top: 28px; padding: 20px 0; border-top: 1px solid var(--border); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(15px, 3vw, 18px); color: var(--muted); line-height: 1.85; text-align: center; }
+
+/* footer */
+footer { padding: 32px 0 52px; border-top: 1px solid var(--border); opacity: 0; animation: up 0.7s 0.7s ease forwards; }
+.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-name { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--muted); }
+.footer-note { font-size: 11px; color: var(--faint); line-height: 1.8; text-align: right; }
+
+@keyframes up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@media (max-width: 480px) {
+  .form-box, .start-box { padding: 28px 20px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+  .footer-note { text-align: left; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="site-tag">許藍方・希塔療癒導師・關係靈氣療癒師</div>
+</header>
+
+<section class="hero">
+  <div class="hero-label">親密關係卡點測驗</div>
+  <h1>你是拼命<em>敲門</em>的人<br>還是拼命<em>鎖門</em>的人？</h1>
+  <p class="hero-sub">12 題找出你在親密關係裡的卡點位置</p>
+  <div class="pull">
+    <p>「很多關係最磨人的地方，不在於誰壞、誰自私——而在於兩個人都很努力，卻一直給錯。」</p>
+    <cite>—— 許藍方</cite>
+  </div>
+</section>
+
+<!-- Start Box -->
+<div class="start-box" id="start-section">
+  <div class="start-title">做完測驗，你會知道</div>
+  <p class="start-desc">你在關係裡是哪一型的卡點、你的底層信念是什麼，以及你真正需要練習的方向。</p>
+  <p class="start-note">填寫方式：依照最近三個月的真實狀態作答，沒有對錯，只有看見。</p>
+  <button class="start-btn" onclick="startQuiz()">開始測驗 →</button>
+</div>
+
+<!-- Quiz -->
+<div id="quiz-section">
+  <div class="progress-bar-wrap">
+    <div class="progress-meta">
+      <span id="q-counter">1 / 12</span>
+      <span id="q-part-label"></span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+  <div id="question-area"></div>
+</div>
+
+<!-- Result -->
+<div id="result-section">
+  <div id="result-type-area"></div>
+
+  <div class="form-box">
+    <div id="form-area">
+      <div class="form-title">領取完整版《親密關係卡點自我檢查表》</div>
+      <p class="form-note">包含完整的類型解讀、底層信念說明，以及三道自我覺察練習。填完立刻寄到你信箱。</p>
+      <form id="kit-form" onsubmit="submitForm(event)">
+        <div class="field"><label>你的名字</label><input type="text" name="first_name" placeholder="請輸入名字" required></div>
+        <div class="field"><label>Email 信箱</label><input type="email" name="email_address" placeholder="請輸入有效的 Email" required></div>
+        <button type="submit" class="submit-btn">我要看完整解讀 →</button>
+      </form>
+      <p class="privacy">🔒 你的資訊不會被分享給任何第三方</p>
+    </div>
+
+    <div class="success" id="success-area">
+      <div class="success-icon">✉️</div>
+      <div class="success-title">已經寄到你信箱了<em>，真的</em></div>
+      <p class="success-body">去收信匣找找看，有時候會跑到垃圾信件。
+如果沒看到，直接回信給我就好。</p>
+      <div class="success-note">找不到信？記得檢查垃圾郵件資料夾，或把許藍方的 email 加入聯絡人。</div>
+    </div>
+  </div>
+
+  <div id="full-result"></div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-name">許藍方</div>
+    <div class="footer-note">填寫即同意接收電子報<br>你的 email 不會分享給任何第三方</div>
+  </div>
+</footer>
+
+</div><!-- .wrap -->
+
+<script>
+const FORM_ID = '9234356';
+
+const questions = [
+  { text: '當對方沒有主動靠近我，我會很快懷疑自己是不是不重要。', part: 'A' },
+  { text: '我覺得自己已經很努力了，但對方還是不滿意。', part: 'C' },
+  { text: '只要對方一靠近我，我心裡就會先緊一下。', part: 'B' },
+  { text: '我心裡一直有一句話：如果對方真的愛我，他就應該自己知道。', part: 'D' },
+  { text: '對方如果拒絕我的需求，我很容易解讀成「他不愛我」或「他不想要我」。', part: 'A' },
+  { text: '我明明有在付出，但對方收到的卻好像完全不是那回事。', part: 'C' },
+  { text: '我很容易把擁抱、碰觸、示好，解讀成「接下來是不是又要我做什麼」。', part: 'B' },
+  { text: '我心裡一直有一句話：只要我一放下防備，我就會被耗光。', part: 'D' },
+  { text: '我很希望對方不用我講，就能知道我想要什麼。', part: 'A' },
+  { text: '我覺得我們不是沒感情，而是怎麼靠近都會撞牆。', part: 'C' },
+  { text: '我常常覺得自己不是在談戀愛，而是在守城。', part: 'B' },
+  { text: '我心裡一直有一句話：表達需要很危險，因為說了也不一定會被接住。', part: 'D' },
+];
+
+const options = [
+  { label: '幾乎沒有', score: 0 },
+  { label: '偶爾會',   score: 1 },
+  { label: '常常會',   score: 2 },
+  { label: '非常符合我', score: 3 },
+];
+
+const typeInfo = {
+  A: {
+    letter: 'A',
+    name: '拼命敲門型',
+    short: '你在關係裡最習慣的動作，是主動靠近、反覆確認、不斷伸手去要。',
+    core: '你要的，表面上像是陪伴和回應，底下守著的常常是：我重不重要？我值不值得被選？',
+    practice: '把「需求」和「存在感」分開。你可以先問自己：我此刻真正想要的，是一個具體需求，還是我想確認自己沒有被丟下？',
+  },
+  B: {
+    letter: 'B',
+    name: '拼命鎖門型',
+    short: '你在關係裡最熟悉的動作，是往後退一步、留住自己的空間、不讓對方輕易進來。',
+    core: '這不是冷漠，是保護。你的身體早就把靠近翻譯成壓力，連一個擁抱，神經都先亮紅燈。',
+    practice: '讓身體重新學會：靠近不一定等於索取。你可以先問自己：我現在是真的不想要，還是我一靠近就先緊起來？',
+  },
+  C: {
+    letter: 'C',
+    name: '努力錯頻型',
+    short: '你在關係裡很努力，真的。只是你給的，常常繞開對方最缺的那一塊。',
+    core: '你和對方都沒有偷懶，只是努力的方向長年錯開。你用自己覺得最好的方式愛對方，但那不是對方懂的語言。',
+    practice: '先停下來辨認，再開口給。你可以先問自己：我是在愛對方，還是在愛我以為對方應該會喜歡的版本？',
+  },
+  D: {
+    letter: 'D',
+    name: '信念主導型',
+    short: '你在關係裡有一套深藏的判斷標準：如果對方真的愛我，他就應該知道。',
+    core: '你守的不只是感情，是一個關於愛的信念。而那個信念，很可能從很早以前就在了。',
+    practice: '去辨認：現在是伴侶在跟我說話，還是我過去的傷在替我反應？你可以先問自己：我現在這麼痛，只有因為眼前這件事嗎？',
+  },
+};
+
+let current = 0;
+let scores = { A: 0, B: 0, C: 0, D: 0 };
+let resultType = null;
+
+function startQuiz() {
+  document.getElementById('start-section').style.display = 'none';
+  document.getElementById('quiz-section').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  document.getElementById('q-counter').textContent = `${current + 1} / ${questions.length}`;
+  document.getElementById('progress-fill').style.width = `${(current / questions.length) * 100}%`;
+
+  const area = document.getElementById('question-area');
+  area.innerHTML = `
+    <div class="question-card">
+      <div class="q-label">題目 ${current + 1}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="options">
+        ${options.map((o, i) => `
+          <button class="opt-btn" onclick="selectOption(${o.score}, '${q.part}', this)">
+            <span class="opt-score">${'○'.repeat(i + 1)}</span>
+            <span>${o.label}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function selectOption(score, part, btn) {
+  document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  scores[part] += score;
+
+  setTimeout(() => {
+    current++;
+    if (current < questions.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }, 380);
+}
+
+function showResult() {
+  document.getElementById('quiz-section').style.display = 'none';
+  const rs = document.getElementById('result-section');
+  rs.style.display = 'block';
+  rs.style.opacity = 0;
+  rs.style.animation = 'up 0.6s ease forwards';
+
+  // Find dominant type
+  resultType = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+  const t = typeInfo[resultType];
+
+  document.getElementById('result-type-area').innerHTML = `
+    <div class="result-type-badge">
+      <div class="type-letter">${t.letter}</div>
+      <div class="type-name"><strong>${t.name}</strong>${t.short}</div>
+    </div>
+    <div class="result-pull"><p>${t.core}</p></div>
+    <p class="result-teaser">填入 email，收到完整解讀——包含你的底層信念說明、三道自我覺察練習，以及給你的新信念。</p>
+  `;
+}
+
+async function submitForm(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('button');
+  btn.textContent = '準備中⋯';
+  btn.disabled = true;
+
+  try {
+    await fetch(`https://app.convertkit.com/forms/${FORM_ID}/subscriptions`, {
+      method: 'POST',
+      body: new FormData(e.target),
+      mode: 'no-cors',
+    });
+  } catch (err) {}
+
+  document.getElementById('form-area').style.display = 'none';
+  const s = document.getElementById('success-area');
+  s.style.display = 'block';
+  s.style.animation = 'fadeIn 0.5s ease forwards';
+
+  showFullResult();
+}
+
+function showFullResult() {
+  const t = typeInfo[resultType];
+  const fr = document.getElementById('full-result');
+  fr.style.display = 'block';
+  fr.innerHTML = `
+    <div class="full-result-title">你的完整解讀</div>
+
+    <div class="belief-section">
+      <div class="belief-label">你的核心卡點</div>
+      <div class="belief-body">${t.core}<br><br>你最需要練習的，是<strong>${t.practice}</strong></div>
+    </div>
+
+    <div class="belief-section">
+      <div class="belief-label">三道自我覺察練習</div>
+      <div class="reflect-q"><span class="reflect-num">1</span><span>在關係裡，我最怕的其實是＿＿＿＿。</span></div>
+      <div class="reflect-q"><span class="reflect-num">2</span><span>當對方沒有照我期待回應時，我心裡最深的一句話是＿＿＿＿。</span></div>
+      <div class="reflect-q"><span class="reflect-num">3</span><span>我真正想被滿足的，可能不是表面那件事，而是＿＿＿＿。</span></div>
+    </div>
+
+    <div class="belief-section">
+      <div class="belief-label">可以慢慢讀的三句新信念</div>
+      <div class="new-belief">我知道如何在關係裡說出我的需要，而且依然值得被愛。</div>
+      <div class="new-belief">我知道如何分辨靠近和壓力，並且讓自己待在安全裡。</div>
+      <div class="new-belief">我知道如何用對方能接收的方式表達愛，也願意學習接住對方的愛。</div>
+    </div>
+
+    <div class="closing">
+      你現在卡住，不代表你不會愛。<br>
+      很多時候，只是你太久沒有被真正聽懂，<br>或太久都在用舊方法保護自己。
+    </div>
+  `;
+  fr.style.opacity = 0;
+  fr.style.animation = 'up 0.6s 0.3s ease forwards';
+}
+</script>
+</body>
+</html>
