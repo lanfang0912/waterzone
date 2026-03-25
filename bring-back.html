@@ -8,16 +8,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --deep:   #1a0d1f;
-  --plum:   #2d1040;
-  --rose:   #8b3a6e;
-  --blush:  #d4789a;
-  --petal:  #f7cde0;
-  --cream:  #fdf4f0;
-  --gold:   #c9a96e;
-  --text:   #f0e6ed;
-  --muted:  #a07890;
-  --card:   rgba(45,16,64,0.85);
+  --deep:   #fdf8f3;
+  --plum:   #fff9f5;
+  --rose:   #b07060;
+  --blush:  #c9856e;
+  --petal:  #8c5a4a;
+  --cream:  #fdf8f3;
+  --gold:   #a07850;
+  --text:   #3d2b1f;
+  --muted:  #9a8070;
+  --card:   rgba(255,255,255,0.80);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -25,16 +25,16 @@ body{
   background:var(--deep);
   color:var(--text);
   font-family:'Noto Sans TC',sans-serif;
-  font-weight:300;
+  font-weight:400;
   min-height:100vh;
   overflow-x:hidden;
 }
 
 /* ── Background ── */
 .bg-wrap{position:fixed;inset:0;z-index:0;overflow:hidden;
-  background:linear-gradient(160deg,#1a0d1f 0%,#2d1040 50%,#1a0818 100%)}
+  background:linear-gradient(160deg,#fdf8f3 0%,#faeee6 50%,#fdf4ef 100%)}
 .petal{position:absolute;pointer-events:none;border-radius:50% 0 50% 0;
-  background:radial-gradient(ellipse,rgba(212,120,154,.15),transparent);
+  background:radial-gradient(ellipse,rgba(201,133,110,.12),transparent);
   animation:drift linear infinite}
 @keyframes drift{
   0%{transform:translateY(100vh) rotate(0deg);opacity:0}
@@ -62,7 +62,7 @@ body{
   font-size:clamp(28px,6vw,44px);
   font-weight:900;
   line-height:1.35;
-  color:#fff;
+  color:#3d2b1f;
   margin-bottom:16px;
 }
 .hero h1 em{
@@ -77,22 +77,23 @@ body{
 /* ── Story card ── */
 .story{
   background:var(--card);
-  border:1px solid rgba(212,120,154,.18);
+  border:1px solid rgba(176,112,96,.15);
   border-radius:16px;
   padding:32px 28px;
   margin-bottom:40px;
   backdrop-filter:blur(12px);
+  box-shadow:0 4px 24px rgba(176,112,96,.08);
 }
 .story-opener{
   font-size:13px;letter-spacing:2px;color:var(--gold);
   margin-bottom:20px;
 }
 .story p{
-  font-size:15px;line-height:2;color:rgba(240,230,237,.85);
+  font-size:15px;line-height:2;color:#5c4438;
   margin-bottom:16px;
 }
 .story p:last-child{margin-bottom:0}
-.story strong{color:var(--petal);font-weight:500}
+.story strong{color:#7a3e2e;font-weight:500}
 
 /* ── What you get ── */
 .gift-section{margin-bottom:40px}
@@ -104,17 +105,18 @@ body{
 }
 .gift-card{
   background:var(--card);
-  border:1px solid rgba(201,169,110,.25);
+  border:1px solid rgba(176,112,96,.15);
   border-radius:16px;
   padding:28px 24px;
   backdrop-filter:blur(12px);
   text-align:center;
+  box-shadow:0 4px 24px rgba(176,112,96,.08);
 }
 .gift-icon{font-size:36px;margin-bottom:16px}
 .gift-title{
   font-family:'Noto Serif TC',serif;
   font-size:20px;font-weight:600;
-  color:#fff;margin-bottom:12px;
+  color:#3d2b1f;margin-bottom:12px;
 }
 .gift-desc{font-size:14px;line-height:1.9;color:var(--muted);}
 .gift-list{
@@ -124,7 +126,7 @@ body{
 }
 .gift-list li{
   font-size:14px;line-height:1.7;
-  color:rgba(240,230,237,.8);
+  color:#5c4438;
   padding-left:20px;position:relative;
 }
 .gift-list li::before{
@@ -136,16 +138,17 @@ body{
 /* ── Form ── */
 .form-wrap{
   background:var(--card);
-  border:1px solid rgba(212,120,154,.25);
+  border:1px solid rgba(176,112,96,.15);
   border-radius:16px;
   padding:32px 28px;
   backdrop-filter:blur(12px);
   margin-bottom:40px;
+  box-shadow:0 4px 24px rgba(176,112,96,.08);
 }
 .form-heading{
   font-family:'Noto Serif TC',serif;
   font-size:20px;font-weight:600;
-  text-align:center;color:#fff;
+  text-align:center;color:#3d2b1f;
   margin-bottom:8px;
 }
 .form-note{
@@ -158,16 +161,16 @@ body{
   margin-bottom:8px;letter-spacing:.5px;
 }
 .form-group input{
-  width:100%;background:rgba(26,13,31,.6);
-  border:1px solid rgba(212,120,154,.25);
+  width:100%;background:#fff;
+  border:1px solid rgba(176,112,96,.25);
   border-radius:10px;padding:14px 16px;
-  color:#fff;font-size:15px;
+  color:#3d2b1f;font-size:15px;
   font-family:'Noto Sans TC',sans-serif;
   transition:border-color .2s;
 }
-.form-group input::placeholder{color:rgba(212,120,154,.35)}
+.form-group input::placeholder{color:rgba(176,112,96,.45)}
 .form-group input:focus{outline:none;border-color:var(--blush)}
-.form-error{color:#ff9fbe;font-size:12px;margin-top:6px;display:none}
+.form-error{color:#c0503a;font-size:12px;margin-top:6px;display:none}
 
 .btn-submit{
   width:100%;
@@ -196,23 +199,23 @@ body{
 .thankyou-icon{font-size:48px;margin-bottom:16px}
 .thankyou h2{
   font-family:'Noto Serif TC',serif;
-  font-size:22px;font-weight:600;color:#fff;
+  font-size:22px;font-weight:600;color:#3d2b1f;
   margin-bottom:12px;
 }
 .thankyou p{font-size:15px;line-height:1.9;color:var(--muted);}
 
 /* ── Quote ── */
 .quote-section{
-  border-left:3px solid var(--rose);
+  border-left:3px solid var(--blush);
   padding:20px 24px;
   margin-bottom:40px;
-  background:rgba(139,58,110,.1);
+  background:rgba(201,133,110,.08);
   border-radius:0 12px 12px 0;
 }
 .quote-text{
   font-family:'Noto Serif TC',serif;
   font-size:17px;line-height:1.9;
-  color:var(--petal);
+  color:#7a3e2e;
   font-weight:400;
 }
 .quote-attr{
@@ -234,8 +237,8 @@ body{
 
 <!-- Background -->
 <div class="bg-wrap">
-  <div class="glow" style="width:400px;height:400px;top:-100px;left:-100px;background:radial-gradient(circle,rgba(139,58,110,.25),transparent)"></div>
-  <div class="glow" style="width:300px;height:300px;bottom:10%;right:-80px;background:radial-gradient(circle,rgba(212,120,154,.15),transparent)"></div>
+  <div class="glow" style="width:400px;height:400px;top:-100px;left:-100px;background:radial-gradient(circle,rgba(201,133,110,.18),transparent)"></div>
+  <div class="glow" style="width:300px;height:300px;bottom:10%;right:-80px;background:radial-gradient(circle,rgba(201,133,110,.12),transparent)"></div>
   <div class="petal" style="width:60px;height:60px;left:10%;animation-duration:18s;animation-delay:0s"></div>
   <div class="petal" style="width:40px;height:40px;left:70%;animation-duration:24s;animation-delay:-8s"></div>
   <div class="petal" style="width:80px;height:80px;left:40%;animation-duration:20s;animation-delay:-14s"></div>
@@ -269,7 +272,7 @@ body{
       「很多時候，療癒不是把一個變遠的人拉回來。<br>
       療癒是把那個多年來一直往後退的自己，重新拉回生命中央。」
     </div>
-    <div class="quote-attr">— Lanfang</div>
+    <div class="quote-attr">— 許藍方｜關係靈氣療癒師・希塔療癒導師</div>
   </div>
 
   <!-- Gift -->
@@ -288,7 +291,7 @@ body{
         <li>我有多久沒有問自己，我真正想要的是什麼？</li>
         <li>我留下來，是因為還有愛，還是因為害怕失去這個角色？</li>
       </ul>
-      <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(212,120,154,.15);font-size:13px;color:var(--muted);line-height:1.8;">
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(176,112,96,.15);font-size:13px;color:var(--muted);line-height:1.8;">
         共 12 題。你不用一次全部回答，先挑幾題最有感的，慢慢來就好。
       </div>
     </div>
@@ -318,7 +321,7 @@ body{
     <div class="thankyou" id="thankyou">
       <div class="thankyou-icon">🌸</div>
       <h2>提問整理已寄出</h2>
-      <p>請去信箱確認，如果沒看到，記得檢查一下垃圾郵件夾。<br><br>謝謝你願意給自己這個機會。<br>帶著這份提問，慢慢走。</p>
+      <p>請去信箱確認，如果沒看到，記得檢查一下垃圾郵件夾。<br><br>謝謝你願意給自己這個機會。<br>帶著這份提問，慢慢走。<br><br>— 許藍方</p>
     </div>
   </div>
 
