@@ -86,6 +86,15 @@ export async function markEmailSent(id: string, emailSentAt: Date): Promise<void
   if (error) throw new Error(error.message);
 }
 
+export async function deleteSubscriber(id: string): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from("subscribers")
+    .delete()
+    .eq("id", id);
+
+  if (error) throw new Error(error.message);
+}
+
 export async function markNotionSynced(id: string): Promise<void> {
   const { error } = await supabaseAdmin
     .from("subscribers")
