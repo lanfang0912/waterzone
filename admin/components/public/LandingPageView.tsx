@@ -1,20 +1,10 @@
 import type { LandingPage } from "@/types";
 import { getTheme } from "@/lib/themes";
 import { HeroSection } from "./HeroSection";
-import { FaqSection } from "./FaqSection";
 import { SubscribeForm } from "./SubscribeForm";
-import { ConsultSection } from "./ConsultSection";
 
 export function LandingPageView({ page }: { page: LandingPage }) {
   const theme = getTheme(page.theme);
-
-  const faqs = [
-    page.faq_1_q && page.faq_1_a ? { q: page.faq_1_q, a: page.faq_1_a } : null,
-    page.faq_2_q && page.faq_2_a ? { q: page.faq_2_q, a: page.faq_2_a } : null,
-    page.faq_3_q && page.faq_3_a ? { q: page.faq_3_q, a: page.faq_3_a } : null,
-  ].filter(Boolean) as { q: string; a: string }[];
-
-  const consults = [page.consult_1, page.consult_2, page.consult_3].filter(Boolean) as string[];
 
   const needGoogleFonts =
     theme.headingFont.includes("Noto Serif") ||
@@ -59,18 +49,6 @@ export function LandingPageView({ page }: { page: LandingPage }) {
             )}
 
             <SubscribeForm slug={page.slug} btnLabel={page.btn ?? "立即領取"} theme={theme} />
-
-            {consults.length > 0 && (
-              <section className="mt-10">
-                <ConsultSection scripts={consults} />
-              </section>
-            )}
-
-            {faqs.length > 0 && (
-              <section className="mt-10">
-                <FaqSection faqs={faqs} />
-              </section>
-            )}
 
             <p className="text-center mt-12" style={{ fontSize: 12, color: theme.muted, lineHeight: 1.7, opacity: 0.6 }}>
               🔒 你的資訊不會分享給任何第三方
