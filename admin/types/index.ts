@@ -3,6 +3,8 @@ export type PageType = "hosted" | "external";
 export type MigrationStatus = "legacy" | "transition" | "hosted" | "archived";
 export type PageStatus = "draft" | "published";
 
+export type PageTheme = "rose" | "terracotta" | "teal" | "sage" | "ink";
+
 export interface LandingPage {
   id: string;
   name: string;
@@ -12,6 +14,7 @@ export interface LandingPage {
   external_url: string | null;
   migration_status: MigrationStatus;
   status: PageStatus;
+  theme: PageTheme;
 
   btn: string | null;
   cta: string | null;

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { LandingPage } from "@/types";
+import type { LandingPage, PageTheme } from "@/types";
+import { THEMES } from "@/lib/themes";
 
 type Tab = "basic" | "content" | "cta" | "email" | "seo";
 
@@ -24,6 +25,7 @@ function emptyForm(): FormData {
     external_url: null,
     migration_status: "hosted",
     status: "draft",
+    theme: "rose",
     btn: null,
     cta: null,
     keyword: null,
@@ -170,6 +172,26 @@ export function LandingPageForm({ page }: { page?: LandingPage }) {
                 { value: "published", label: "已發佈" },
               ]}
             />
+          </Field>
+          <Field label="頁面主題">
+            <div className="flex gap-2 flex-wrap">
+              {(Object.entries(THEMES) as [PageTheme, typeof THEMES[PageTheme]][]).map(([key, t]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => set("theme", key)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-all"
+                  style={{
+                    borderColor: form.theme === key ? t.swatch : "#e5e7eb",
+                    background: form.theme === key ? `${t.swatch}15` : "white",
+                    fontWeight: form.theme === key ? 600 : 400,
+                  }}
+                >
+                  <span className="w-4 h-4 rounded-full flex-shrink-0" style={{ background: t.swatch }} />
+                  {t.label}
+                </button>
+              ))}
+            </div>
           </Field>
         </Section>
       )}
