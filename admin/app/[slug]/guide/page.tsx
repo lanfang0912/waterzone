@@ -2,6 +2,20 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getLandingPageBySlug } from "@/lib/db/landing-pages";
 
+type Section = { title: string; items: string[] };
+type ScoreRange = { range: string; description: string };
+type Reflection = { question: string; hints: string };
+type GuideContent = {
+  title?: string;
+  subtitle?: string;
+  instructions?: string;
+  sections?: Section[];
+  scoring?: ScoreRange[];
+  reflections?: Reflection[];
+  practice?: string[];
+  closing?: string;
+};
+
 type Props = { params: Promise<{ slug: string }> };
 
 export const dynamic = "force-dynamic";
@@ -22,10 +36,9 @@ export default async function GuidePage({ params }: Props) {
 
   if (!page || page.status !== "published") notFound();
 
-  const content = page.body_json as Record<string, unknown> | null;
-  if (!content) notFound();
+  if (!page.body_json) notFound();
 
-  const sections = content.sections as Section[] | undefined;
+  const content = page.body_json as GuideContent;
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -33,11 +46,11 @@ export default async function GuidePage({ params }: Props) {
         {/* Header */}
         <div className="mb-10 text-center">
           <h1 className="text-2xl font-bold text-stone-800 leading-snug mb-3">
-            {String(content.title ?? page.name)}
+            {content.title ?? page.name}
           </h1>
           {content.subtitle && (
             <p className="text-stone-500 text-sm leading-relaxed">
-              {String(content.subtitle)}
+              {content.subtitle}
             </p>
           )}
         </div>
@@ -45,12 +58,12 @@ export default async function GuidePage({ params }: Props) {
         {/* Instructions */}
         {content.instructions && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-4 mb-8 text-sm text-amber-800">
-            {String(content.instructions)}
+            {content.instructions}
           </div>
         )}
 
         {/* Sections */}
-        {sections?.map((section, i) => (
+        {content.sections?.map((section, i) => (
           <div key={i} className="mb-8">
             <h2 className="text-base font-semibold text-stone-700 mb-3 flex items-center gap-2">
               <span className="text-stone-400 text-xs font-normal">▋</span>
@@ -82,7 +95,7 @@ export default async function GuidePage({ params }: Props) {
               ▋ 計分說明
             </h2>
             <div className="space-y-4">
-              {(content.scoring as ScoreRange[]).map((s, i) => (
+              {content.scoring.map((s, i) => (
                 <div key={i} className="border-l-2 border-teal-300 pl-4">
                   <div className="text-sm font-medium text-teal-700 mb-1">
                     {s.range}
@@ -103,7 +116,7 @@ export default async function GuidePage({ params }: Props) {
               ▋ 三個最重要的覺察題
             </h2>
             <div className="space-y-5">
-              {(content.reflections as Reflection[]).map((r, i) => (
+              {content.reflections.map((r, i) => (
                 <div key={i}>
                   <p className="text-sm font-medium text-stone-700 mb-1">
                     {r.question}
@@ -124,9 +137,11 @@ export default async function GuidePage({ params }: Props) {
               ▋ 今天的小練習
             </h2>
             <div className="space-y-2">
-              {(content.practice as string[]).map((p, i) => (
+              {content.practice.map((p, i) => (
                 <div key={i} className="flex gap-2 text-sm text-teal-800">
-                  <span className="font-medium">第{["一", "二"][i]}件</span>
+                  <span className="font-medium">
+                    第{["一", "二", "三"][i]}件
+                  </span>
                   <span>{p}</span>
                 </div>
               ))}
@@ -134,17 +149,13 @@ export default async function GuidePage({ params }: Props) {
           </div>
         )}
 
-        {/* Footer note */}
+        {/* Closing */}
         {content.closing && (
           <p className="text-center text-xs text-stone-400 leading-relaxed">
-            {String(content.closing)}
+            {content.closing}
           </p>
         )}
       </div>
     </div>
   );
 }
-
-type Section = { title: string; items: string[] };
-type ScoreRange = { range: string; description: string };
-type Reflection = { question: string; hints: string };
