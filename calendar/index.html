@@ -463,6 +463,12 @@ function submitForm() {
     body: JSON.stringify({ api_key: CONFIG.kitApiKey, email: email, first_name: name }),
   }).catch(() => {});
 
+  fetch('https://admin.urland.com.tw/api/public/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ slug: 'calendar', name: name, email: email }),
+  }).catch(() => {});
+
   setTimeout(() => {
     document.getElementById('formWrap').style.display = 'none';
     document.getElementById('spinner').classList.remove('show');

@@ -182,6 +182,7 @@ async function submitForm(e){
       mode: 'no-cors'
     });
   } catch(err) {}
+  const _fd=new FormData(e.target);fetch('https://admin.urland.com.tw/api/public/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:'parent-boundary',name:_fd.get('first_name')||'',email:_fd.get('email_address')||''})}).catch(()=>{});
   document.getElementById('form-area').style.display = 'none';
   const s = document.getElementById('success-area');
   s.style.display = 'block';

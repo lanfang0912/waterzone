@@ -510,6 +510,12 @@ function submitEmail() {
     }),
   }).catch(() => {});
 
+  fetch('https://admin.urland.com.tw/api/public/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ slug: 'waterzone', name: name, email: email }),
+  }).catch(() => {});
+
   setTimeout(() => showResult(name, email, type), 800);
 }
 

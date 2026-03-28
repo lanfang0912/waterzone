@@ -104,6 +104,7 @@ async function submitForm(e){
   e.preventDefault();const btn=e.target.querySelector('button');
   btn.textContent='準備中⋯';btn.disabled=true;
   try{await fetch('https://app.convertkit.com/forms/9161412/subscriptions',{method:'POST',body:new FormData(e.target),mode:'no-cors'});}catch(err){}
+  const _fd=new FormData(e.target);fetch('https://admin.urland.com.tw/api/public/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:'border',name:_fd.get('first_name')||'',email:_fd.get('email_address')||''})}).catch(()=>{});
   document.getElementById('form-area').style.display='none';
   const s=document.getElementById('success-area');s.style.display='block';s.style.animation='fadeIn 0.5s ease forwards';
 }
