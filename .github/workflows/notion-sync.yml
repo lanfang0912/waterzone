@@ -1,0 +1,128 @@
+name: Sync Landing Page to Notion
+
+on:
+  push:
+    paths:
+      - '*/_data.json'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Find new or changed _data.json files
+        id: find
+        run: |
+          FILES=$(git diff --name-only HEAD~1 HEAD | grep '_data.json' || true)
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
+      - name: Sync to Notion
+        if: steps.find.outputs.files != ''
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: |
+          for FILE in ${{ steps.find.outputs.files }}; do
+            echo "Syncing $FILE..."
+            node -e "
+          const fs = require('fs');
+          const https = require('https');
+
+          const d = JSON.parse(fs.readFileSync('$FILE', 'utf8'));
+          const token = process.env.NOTION_TOKEN;
+          const dbId  = process.env.NOTION_DATABASE_ID;
+
+          const richText = (str) => str
+            ? [{ type: 'text', text: { content: String(str).slice(0, 2000) } }]
+            : [{ type: 'text', text: { content: '' } }];
+
+          const faqBlocks = (d.faq || []).flatMap(item => ([
+            { object:'block', type:'heading_3', heading_3:{ rich_text: richText(item.q) } },
+            { object:'block', type:'paragraph', paragraph:{ rich_text: richText(item.a) } }
+          ]));
+
+          const consultBlocks = (d.consult_scripts || []).flatMap(item => ([
+            { object:'block', type:'heading_3', heading_3:{ rich_text: richText(item.label) } },
+            { object:'block', type:'paragraph', paragraph:{ rich_text: richText(item.script) } }
+          ]));
+
+          const shorts = d.keyboard_shorts || {};
+          const shortBlocks = [
+            { object:'block', type:'heading_2', heading_2:{ rich_text: richText('IG 限動') } },
+            ...(shorts.ig_stories || []).map(t => ({ object:'block', type:'bulleted_list_item', bulleted_list_item:{ rich_text: richText(t) } })),
+            { object:'block', type:'heading_2', heading_2:{ rich_text: richText('截圖金句') } },
+            ...(shorts.quote_cards || []).map(t => ({ object:'block', type:'bulleted_list_item', bulleted_list_item:{ rich_text: richText(t) } })),
+            { object:'block', type:'heading_2', heading_2:{ rich_text: richText('留言快速回應') } },
+            ...(shorts.comment_replies || []).map(t => ({ object:'block', type:'bulleted_list_item', bulleted_list_item:{ rich_text: richText(t) } })),
+          ];
+
+          const body = JSON.stringify({
+            parent: { database_id: dbId },
+            icon: { type: 'emoji', emoji: '📄' },
+            properties: {
+              'Name':       { title: richText(d.lead || d.slug) },
+              'Slug':       { rich_text: richText(d.slug) },
+              'URL':        { url: d.url || null },
+              'Kit Form ID':{ rich_text: richText(d.kit_form_id) },
+              '建立日期':    { date: { start: d.created_at || new Date().toISOString().slice(0,10) } },
+              '按鈕文字':    { rich_text: richText(d.btn) },
+              '確認信按鈕':  { rich_text: richText(d.confirm_btn) },
+              'Email 主旨':  { rich_text: richText(d.email_subject) },
+              '私訊關鍵字':  { rich_text: richText((d.keyword_reply?.keywords || []).join('、')) },
+            },
+            children: [
+              { object:'block', type:'heading_1', heading_1:{ rich_text: richText('📧 Email 文案') } },
+              { object:'block', type:'heading_2', heading_2:{ rich_text: richText('主旨') } },
+              { object:'block', type:'paragraph', paragraph:{ rich_text: richText(d.email_subject) } },
+              { object:'block', type:'heading_2', heading_2:{ rich_text: richText('正文') } },
+              { object:'block', type:'paragraph', paragraph:{ rich_text: richText(d.email_body) } },
+              { object:'block', type:'divider', divider:{} },
+              { object:'block', type:'heading_1', heading_1:{ rich_text: richText('📢 行銷素材') } },
+              { object:'block', type:'heading_2', heading_2:{ rich_text: richText('文章 CTA') } },
+              { object:'block', type:'paragraph', paragraph:{ rich_text: richText(d.cta) } },
+              { object:'block', type:'heading_2', heading_2:{ rich_text: richText('私訊關鍵字') } },
+              { object:'block', type:'paragraph', paragraph:{ rich_text: richText((d.keyword_reply?.keywords || []).join('、')) } },
+              { object:'block', type:'heading_2', heading_2:{ rich_text: richText('私訊第一則回覆') } },
+              { object:'block', type:'paragraph', paragraph:{ rich_text: richText(d.keyword_reply?.reply) } },
+              { object:'block', type:'divider', divider:{} },
+              { object:'block', type:'heading_1', heading_1:{ rich_text: richText('💬 IG 素材') } },
+              ...shortBlocks,
+              { object:'block', type:'divider', divider:{} },
+              { object:'block', type:'heading_1', heading_1:{ rich_text: richText('❓ FAQ') } },
+              ...faqBlocks,
+              { object:'block', type:'divider', divider:{} },
+              { object:'block', type:'heading_1', heading_1:{ rich_text: richText('🗣️ 諮詢話術') } },
+              ...consultBlocks,
+            ]
+          });
+
+          const req = https.request({
+            hostname: 'api.notion.com',
+            path: '/v1/pages',
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Notion-Version': '2022-06-28',
+              'Content-Type': 'application/json',
+              'Content-Length': Buffer.byteLength(body)
+            }
+          }, res => {
+            let data = '';
+            res.on('data', c => data += c);
+            res.on('end', () => {
+              const r = JSON.parse(data);
+              if (r.object === 'error') {
+                console.error('Notion error:', r.message);
+                process.exit(1);
+              }
+              console.log('Created Notion page:', r.url);
+            });
+          });
+          req.on('error', e => { console.error(e); process.exit(1); });
+          req.write(body);
+          req.end();
+          "
+          done
