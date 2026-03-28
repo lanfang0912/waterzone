@@ -5,16 +5,11 @@ import type { Theme } from "@/lib/themes";
 type Props = {
   title: string;
   subtitle?: string;
-  btn?: string;
   slug: string;
   theme: Theme;
 };
 
-export function HeroSection({ title, subtitle, btn, slug, theme }: Props) {
-  function scrollToForm() {
-    document.getElementById(`subscribe-form-${slug}`)?.scrollIntoView({ behavior: "smooth" });
-  }
-
+export function HeroSection({ title, subtitle, theme }: Props) {
   return (
     <section className="text-center pt-16 pb-10">
       <div
@@ -36,15 +31,6 @@ export function HeroSection({ title, subtitle, btn, slug, theme }: Props) {
         >
           {subtitle}
         </p>
-      )}
-      {btn && (
-        <button
-          onClick={scrollToForm}
-          className="inline-block rounded-xl px-8 py-3 text-white font-medium transition-all hover:-translate-y-0.5"
-          style={{ background: theme.btnGradient, fontSize: 15, letterSpacing: "0.05em", boxShadow: `0 8px 32px ${theme.btnShadow}`, border: "none", cursor: "pointer" }}
-        >
-          {btn}
-        </button>
       )}
     </section>
   );

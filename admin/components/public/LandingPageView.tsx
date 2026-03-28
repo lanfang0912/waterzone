@@ -48,7 +48,6 @@ export function LandingPageView({ page }: { page: LandingPage }) {
             <HeroSection
               title={page.hero_title ?? page.name}
               subtitle={page.hero_subtitle ?? undefined}
-              btn={page.btn ?? undefined}
               slug={page.slug}
               theme={theme}
             />
