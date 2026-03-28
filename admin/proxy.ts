@@ -7,15 +7,12 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token, req }) => {
-        // 登入頁不需要驗證
-        if (req.nextUrl.pathname === "/admin/login") return true;
-        return !!token;
-      },
+      authorized: ({ token }) => !!token,
     },
   }
 );
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  // 保護除了 login 以外的所有 /admin/* 路由
+  matcher: ["/admin/((?!login$).+)"],
 };
