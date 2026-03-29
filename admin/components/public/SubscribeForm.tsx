@@ -1,22 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Theme } from "@/lib/themes";
 
 type Props = {
   slug: string;
   btnLabel?: string;
   theme: Theme;
+  redirectToCheck?: boolean;
 };
 
 type State = "idle" | "loading" | "success" | "error";
 
-export function SubscribeForm({ slug, btnLabel = "立即領取", theme }: Props) {
+export function SubscribeForm({ slug, btnLabel = "立即領取", theme, redirectToCheck }: Props) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [state, setState] = useState<State>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const router = useRouter();
 
   const cardStyle: React.CSSProperties = {
     background: "rgba(255,255,255,0.82)",
@@ -60,6 +63,10 @@ export function SubscribeForm({ slug, btnLabel = "立即領取", theme }: Props)
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error ?? "訂閱失敗");
+      if (redirectToCheck) {
+        router.push(`/${slug}/check`);
+        return;
+      }
       setState("success");
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : "發生錯誤，請稍後再試");

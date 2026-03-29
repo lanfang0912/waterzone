@@ -48,7 +48,7 @@ export function LandingPageView({ page }: { page: LandingPage }) {
               </p>
             )}
 
-            <SubscribeForm slug={page.slug} btnLabel={page.btn ?? "立即領取"} theme={theme} />
+            <SubscribeForm slug={page.slug} btnLabel={page.btn ?? "立即領取"} theme={theme} redirectToCheck={!!page.body_json} />
 
             <p className="text-center mt-12" style={{ fontSize: 12, color: theme.muted, lineHeight: 1.7, opacity: 0.6 }}>
               🔒 你的資訊不會分享給任何第三方
