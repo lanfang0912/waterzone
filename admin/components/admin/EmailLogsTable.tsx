@@ -67,8 +67,8 @@ export function EmailLogsTable() {
         )}
       </div>
 
-      {/* 表格 */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      {/* ── 桌面表格 ── */}
+      <div className="hidden md:block bg-white rounded-xl border border-gray-200 overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50">
@@ -80,71 +80,68 @@ export function EmailLogsTable() {
             </tr>
           </thead>
           <tbody>
-            {!fetched && (
-              <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-gray-400 text-sm">
-                  按「查詢」載入資料
-                </td>
-              </tr>
-            )}
-            {fetched && loading && (
-              <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-gray-400 text-sm">
-                  載入中...
-                </td>
-              </tr>
-            )}
-            {fetched && !loading && rows.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-gray-400 text-sm">
-                  沒有紀錄
-                </td>
-              </tr>
-            )}
+            {!fetched && <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-400 text-sm">按「查詢」載入資料</td></tr>}
+            {fetched && loading && <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-400 text-sm">載入中...</td></tr>}
+            {fetched && !loading && rows.length === 0 && <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-400 text-sm">沒有紀錄</td></tr>}
             {!loading && rows.map((row) => (
               <tr key={row.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                 <td className="px-4 py-3">
-                  <span className={`text-xs px-2 py-0.5 rounded font-medium ${STATUS_COLOR[row.status]}`}>
-                    {STATUS_LABEL[row.status]}
-                  </span>
+                  <span className={`text-xs px-2 py-0.5 rounded font-medium ${STATUS_COLOR[row.status]}`}>{STATUS_LABEL[row.status]}</span>
                 </td>
-                <td className="px-4 py-3 text-gray-700 max-w-xs truncate">
-                  {row.subject ?? "—"}
-                </td>
+                <td className="px-4 py-3 text-gray-700 max-w-xs truncate">{row.subject ?? "—"}</td>
                 <td className="px-4 py-3 text-gray-400 text-xs font-mono">
-                  {row.resend_email_id
-                    ? row.resend_email_id.slice(0, 16) + "..."
-                    : "—"}
+                  {row.resend_email_id ? row.resend_email_id.slice(0, 16) + "..." : "—"}
                 </td>
                 <td className="px-4 py-3 max-w-xs">
                   {row.error_message ? (
                     <div>
-                      <button
-                        onClick={() => setExpandedError(expandedError === row.id ? null : row.id)}
-                        className="text-xs text-red-600 hover:underline"
-                      >
+                      <button onClick={() => setExpandedError(expandedError === row.id ? null : row.id)} className="text-xs text-red-600 hover:underline">
                         {expandedError === row.id ? "收起" : "查看錯誤"}
                       </button>
                       {expandedError === row.id && (
-                        <pre className="mt-1 text-xs text-red-700 bg-red-50 rounded p-2 whitespace-pre-wrap break-all">
-                          {row.error_message}
-                        </pre>
+                        <pre className="mt-1 text-xs text-red-700 bg-red-50 rounded p-2 whitespace-pre-wrap break-all">{row.error_message}</pre>
                       )}
                     </div>
-                  ) : (
-                    <span className="text-gray-300 text-xs">—</span>
-                  )}
+                  ) : <span className="text-gray-300 text-xs">—</span>}
                 </td>
                 <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
-                  {new Date(row.sent_at).toLocaleString("zh-TW", {
-                    month: "2-digit", day: "2-digit",
-                    hour: "2-digit", minute: "2-digit",
-                  })}
+                  {new Date(row.sent_at).toLocaleString("zh-TW", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* ── 手機卡片 ── */}
+      <div className="md:hidden space-y-3">
+        {!fetched && <div className="bg-white rounded-xl border border-gray-200 px-4 py-10 text-center text-gray-400 text-sm">按「查詢」載入資料</div>}
+        {fetched && loading && <div className="bg-white rounded-xl border border-gray-200 px-4 py-10 text-center text-gray-400 text-sm">載入中...</div>}
+        {fetched && !loading && rows.length === 0 && <div className="bg-white rounded-xl border border-gray-200 px-4 py-10 text-center text-gray-400 text-sm">沒有紀錄</div>}
+        {!loading && rows.map((row) => (
+          <div key={row.id} className="bg-white rounded-xl border border-gray-200 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className={`text-xs px-2 py-0.5 rounded font-medium ${STATUS_COLOR[row.status]}`}>{STATUS_LABEL[row.status]}</span>
+              <span className="text-xs text-gray-400">
+                {new Date(row.sent_at).toLocaleString("zh-TW", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
+              </span>
+            </div>
+            <div className="text-sm text-gray-700">{row.subject ?? "—"}</div>
+            {row.resend_email_id && (
+              <div className="text-xs text-gray-400 font-mono">{row.resend_email_id.slice(0, 20)}...</div>
+            )}
+            {row.error_message && (
+              <div>
+                <button onClick={() => setExpandedError(expandedError === row.id ? null : row.id)} className="text-xs text-red-600 hover:underline">
+                  {expandedError === row.id ? "收起錯誤" : "查看錯誤"}
+                </button>
+                {expandedError === row.id && (
+                  <pre className="mt-1 text-xs text-red-700 bg-red-50 rounded p-2 whitespace-pre-wrap break-all">{row.error_message}</pre>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
       {/* 分頁 */}
