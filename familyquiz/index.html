@@ -585,6 +585,30 @@
 
   </div><!-- s-quiz -->
 
+  <!-- STEP 2.5: Email 收集 -->
+  <div class="screen" id="s-email">
+    <div style="max-width:480px;margin:60px auto;padding:0 24px;">
+      <p style="text-align:center;font-size:12px;letter-spacing:.15em;color:var(--terracotta);font-weight:500;margin-bottom:16px;">測驗完成</p>
+      <h2 style="font-family:'Noto Serif TC',serif;font-size:clamp(20px,4vw,28px);font-weight:700;text-align:center;color:var(--brown-deep);margin-bottom:12px;line-height:1.5;">你的家庭支持系統診斷結果<br>準備好了</h2>
+      <p style="text-align:center;font-size:14px;color:var(--brown-light);line-height:1.9;margin-bottom:32px;">填入資料，馬上查看你屬於哪一種類型<br>結果也會寄到你的信箱</p>
+      <form id="emailForm" onsubmit="handleEmailSubmit(event)" style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:32px;box-shadow:0 4px 24px var(--shadow);">
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:12px;color:var(--brown-light);margin-bottom:8px;letter-spacing:.05em;">你的名字</label>
+          <input id="sub-name" type="text" required placeholder="請輸入名字" style="width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:10px;font-size:15px;font-family:'Noto Sans TC',sans-serif;color:var(--brown-deep);background:#FDFAF7;outline:none;" />
+        </div>
+        <div style="margin-bottom:24px;">
+          <label style="display:block;font-size:12px;color:var(--brown-light);margin-bottom:8px;letter-spacing:.05em;">Email 信箱</label>
+          <input id="sub-email" type="email" required placeholder="請輸入有效的 Email" style="width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:10px;font-size:15px;font-family:'Noto Sans TC',sans-serif;color:var(--brown-deep);background:#FDFAF7;outline:none;" />
+        </div>
+        <p id="sub-error" style="display:none;color:#c0503a;font-size:12px;margin-bottom:12px;text-align:center;"></p>
+        <button type="submit" id="sub-btn" style="width:100%;padding:16px;background:linear-gradient(135deg,var(--terracotta),#A8401A);border:none;border-radius:12px;color:#fff;font-size:16px;font-weight:500;font-family:'Noto Sans TC',sans-serif;cursor:pointer;letter-spacing:.05em;">
+          查看我的診斷結果 →
+        </button>
+      </form>
+      <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--brown-light);opacity:.6;">🔒 你的資訊不會分享給任何第三方</p>
+    </div>
+  </div>
+
   <!-- STEP 3: 結果 -->
   <div class="screen" id="s-result">
     <div id="resultCard" class="result-section"></div>
@@ -696,10 +720,33 @@ function showResult() {
   document.getElementById('progressFill').style.width = '100%';
   document.getElementById('progressPct').textContent = '100%';
   document.getElementById('progressWrap').style.display = 'none';
-  
+  goTo('s-email');
+}
+
+async function handleEmailSubmit(e) {
+  e.preventDefault();
+  const name  = document.getElementById('sub-name').value.trim();
+  const email = document.getElementById('sub-email').value.trim();
+  const btn   = document.getElementById('sub-btn');
+  const errEl = document.getElementById('sub-error');
+  btn.textContent = '送出中...';
+  btn.disabled = true;
+  errEl.style.display = 'none';
+
+  const type = getType();
+  fetch('https://admin.urland.com.tw/api/public/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ slug: 'familyquiz', name, email, note: '家庭測驗結果：' + type }),
+  }).catch(() => {});
+
+  displayResult();
+}
+
+function displayResult() {
   const type = getType();
   const t = TYPES[type];
-  
+
   document.getElementById('resultCard').innerHTML = `
     <div class="result-badge ${t.badgeClass}">${t.badge}</div>
     <p class="result-title">${t.title}</p>
