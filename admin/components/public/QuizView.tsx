@@ -22,7 +22,11 @@ export function QuizView({ page, theme }: Props) {
   const content = page.body_json as QuizContent;
 
   const [checked, setChecked] = useState<Set<string>>(new Set());
-  const [phase, setPhase] = useState<"quiz" | "result">("quiz");
+  const [phase, setPhase] = useState<"quiz" | "form" | "result">("quiz");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const score = checked.size;
   const total = content.sections.reduce((acc, s) => acc + s.items.length, 0);
@@ -145,7 +149,7 @@ export function QuizView({ page, theme }: Props) {
                   已勾選 <span style={{ fontWeight: 700, color: theme.accent, fontSize: 18 }}>{score}</span> / {total} 題
                 </p>
                 <button
-                  onClick={() => setPhase("result")}
+                  onClick={() => setPhase("form")}
                   className="w-full py-3 rounded-xl font-semibold text-white transition-opacity hover:opacity-90"
                   style={{ background: theme.btnGradient, boxShadow: theme.btnShadow, fontSize: 15 }}
                 >
@@ -153,6 +157,52 @@ export function QuizView({ page, theme }: Props) {
                 </button>
               </div>
             </>
+          )}
+
+          {/* ── FORM PHASE ── */}
+          {phase === "form" && (
+            <div className="rounded-2xl p-7" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(16px)", border: `1px solid ${theme.border}`, boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
+              <p className="text-center mb-1" style={{ fontFamily: theme.headingFont, fontWeight: 700, fontSize: 18, color: theme.text }}>
+                你勾了 {score} 題
+              </p>
+              <p className="text-center mb-6" style={{ fontSize: 13, color: theme.muted }}>
+                填入資料，馬上看你的診斷結果
+              </p>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                setSubmitting(true);
+                setSubmitError("");
+                try {
+                  const r = getResult();
+                  await fetch("/api/public/subscribe", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ slug: page.slug, name, email, note: `分數：${score}／${total}｜${r.label}`, score, result_label: r.label, result_description: r.description }),
+                  });
+                  setPhase("result");
+                } catch {
+                  setSubmitError("送出失敗，請再試一次");
+                } finally {
+                  setSubmitting(false);
+                }
+              }} className="space-y-4">
+                <input required type="text" placeholder="你的名字" value={name} onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl text-sm outline-none"
+                  style={{ background: "rgba(255,255,255,0.9)", border: `1px solid ${theme.border}`, color: theme.text }} />
+                <input required type="email" placeholder="Email（結果會寄到這裡）" value={email} onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl text-sm outline-none"
+                  style={{ background: "rgba(255,255,255,0.9)", border: `1px solid ${theme.border}`, color: theme.text }} />
+                {submitError && <p className="text-sm text-red-500 text-center">{submitError}</p>}
+                <button type="submit" disabled={submitting}
+                  className="w-full py-3 rounded-xl font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+                  style={{ background: theme.btnGradient, boxShadow: theme.btnShadow, fontSize: 15 }}>
+                  {submitting ? "送出中..." : "看我的診斷結果"}
+                </button>
+              </form>
+              <button onClick={() => setPhase("quiz")} className="w-full text-center mt-4 text-xs" style={{ color: theme.muted }}>
+                ← 回去修改答案
+              </button>
+            </div>
           )}
 
           {/* ── RESULT PHASE ── */}

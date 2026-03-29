@@ -1,5 +1,5 @@
 // ─── Landing Page ─────────────────────────────────────────────
-export type PageType = "hosted" | "external";
+export type PageType = "hosted" | "external" | "quiz";
 export type MigrationStatus = "legacy" | "transition" | "hosted" | "archived";
 export type PageStatus = "draft" | "published";
 

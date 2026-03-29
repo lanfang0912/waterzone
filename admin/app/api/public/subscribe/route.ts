@@ -10,7 +10,7 @@ import type { SubscribeRequest } from "@/types";
 export async function POST(req: NextRequest) {
   try {
     const body: SubscribeRequest = await req.json();
-    const { slug, name, email, phone, line_id, utm_source, utm_medium, utm_campaign, note } = body;
+    const { slug, name, email, phone, line_id, utm_source, utm_medium, utm_campaign, note, score, result_label, result_description } = body;
 
     // ── 1. 基本驗證 ───────────────────────────────────────────
     if (!slug || !name || !email) {
@@ -47,7 +47,12 @@ export async function POST(req: NextRequest) {
 
     // ── 4. 發信 + 寫 email_log ────────────────────────────────
     try {
-      const interpolate = (str: string) => str.replace(/\{name\}/g, name).replace(/\{email\}/g, email);
+      const interpolate = (str: string) => str
+        .replace(/\{name\}/g, name)
+        .replace(/\{email\}/g, email)
+        .replace(/\{score\}/g, score != null ? String(score) : "")
+        .replace(/\{result_label\}/g, result_label ?? "")
+        .replace(/\{result_description\}/g, result_description ?? "");
       const result = await sendSubscribeEmail({
         to: email,
         name,

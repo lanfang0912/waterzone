@@ -5,14 +5,74 @@ import { useRouter } from "next/navigation";
 import type { LandingPage, PageTheme } from "@/types";
 import { THEMES } from "@/lib/themes";
 
-type Tab = "basic" | "content" | "cta" | "email" | "seo";
+type Tab = "basic" | "content" | "cta" | "email" | "seo" | "quiz";
 
-const TABS: { key: Tab; label: string }[] = [
+type QuizSection = { title: string; itemsText: string };
+type ScoreRange = { min: string; max: string; label: string; description: string };
+type QuizFormData = {
+  intro: string;
+  sections: QuizSection[];
+  scoring: ScoreRange[];
+  practice: string;
+  closing: string;
+};
+
+function defaultQuiz(): QuizFormData {
+  return {
+    intro: "在符合你的狀況前打勾，不用想太久，第一直覺最準。",
+    sections: [
+      { title: "第一部分", itemsText: "" },
+      { title: "第二部分", itemsText: "" },
+    ],
+    scoring: [
+      { min: "0", max: "8", label: "", description: "" },
+      { min: "9", max: "18", label: "", description: "" },
+      { min: "19", max: "30", label: "", description: "" },
+    ],
+    practice: "",
+    closing: "",
+  };
+}
+
+function quizToJson(q: QuizFormData): Record<string, unknown> {
+  return {
+    intro: q.intro,
+    sections: q.sections.map((s) => ({
+      title: s.title,
+      items: s.itemsText.split("\n").map((l) => l.trim()).filter(Boolean),
+    })),
+    scoring: q.scoring.map((s) => ({
+      min: Number(s.min), max: Number(s.max), label: s.label, description: s.description,
+    })),
+    practice: q.practice.split("\n").map((l) => l.trim()).filter(Boolean),
+    closing: q.closing,
+  };
+}
+
+function jsonToQuiz(json: Record<string, unknown>): QuizFormData {
+  type RawSection = { title?: string; items?: string[] };
+  type RawScore = { min?: number; max?: number; label?: string; description?: string };
+  return {
+    intro: (json.intro as string) ?? "",
+    sections: ((json.sections as RawSection[]) ?? []).map((s) => ({
+      title: s.title ?? "",
+      itemsText: (s.items ?? []).join("\n"),
+    })),
+    scoring: ((json.scoring as RawScore[]) ?? []).map((s) => ({
+      min: String(s.min ?? ""), max: String(s.max ?? ""), label: s.label ?? "", description: s.description ?? "",
+    })),
+    practice: ((json.practice as string[]) ?? []).join("\n"),
+    closing: (json.closing as string) ?? "",
+  };
+}
+
+const TABS: { key: Tab; label: string; quizOnly?: boolean; hiddenForQuiz?: boolean }[] = [
   { key: "basic",   label: "基本" },
-  { key: "content", label: "內容" },
+  { key: "content", label: "內容", hiddenForQuiz: true },
   { key: "cta",     label: "CTA" },
   { key: "email",   label: "Email" },
   { key: "seo",     label: "SEO" },
+  { key: "quiz",    label: "測驗內容", quizOnly: true },
 ];
 
 type FormData = Omit<LandingPage, "id" | "created_at" | "updated_at" | "body_json">;
@@ -57,6 +117,9 @@ export function LandingPageForm({ page }: { page?: LandingPage }) {
     const { id: _id, created_at: _c, updated_at: _u, body_json: _b, ...rest } = page;
     return rest;
   });
+  const [quiz, setQuiz] = useState<QuizFormData>(() =>
+    page?.body_json ? jsonToQuiz(page.body_json as Record<string, unknown>) : defaultQuiz()
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
@@ -77,10 +140,13 @@ export function LandingPageForm({ page }: { page?: LandingPage }) {
         : "/api/admin/landing-pages";
       const method = isEdit ? "PATCH" : "POST";
 
+      const payload = form.page_type === "quiz"
+        ? { ...form, body_json: quizToJson(quiz) }
+        : form;
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       const json = await res.json();
 
@@ -102,8 +168,11 @@ export function LandingPageForm({ page }: { page?: LandingPage }) {
   return (
     <form onSubmit={handleSubmit}>
       {/* Tab 導覽 */}
-      <div className="flex gap-1 mb-6 border-b border-gray-200">
-        {TABS.map((t) => (
+      <div className="flex gap-1 mb-6 border-b border-gray-200 flex-wrap">
+        {TABS.filter((t) =>
+          t.quizOnly ? form.page_type === "quiz" :
+          t.hiddenForQuiz ? form.page_type !== "quiz" : true
+        ).map((t) => (
           <button
             key={t.key}
             type="button"
@@ -138,7 +207,8 @@ export function LandingPageForm({ page }: { page?: LandingPage }) {
               value={form.page_type}
               onChange={(v) => set("page_type", v)}
               options={[
-                { value: "hosted", label: "Hosted（新系統）" },
+                { value: "hosted",   label: "普通型（訂閱表單）" },
+                { value: "quiz",     label: "測驗型（勾選 → 結果）" },
                 { value: "external", label: "External（舊 GitHub）" },
               ]}
             />
@@ -263,6 +333,83 @@ export function LandingPageForm({ page }: { page?: LandingPage }) {
             <Textarea value={form.seo_description ?? ""} onChange={(v) => set("seo_description", v)} rows={3} />
           </Field>
         </Section>
+      )}
+
+      {/* ── 測驗內容 ── */}
+      {tab === "quiz" && (
+        <div className="space-y-6">
+          <Section>
+            <Field label="說明文字（頁面頂部）">
+              <Textarea value={quiz.intro} onChange={(v) => setQuiz((q) => ({ ...q, intro: v }))} rows={2} />
+            </Field>
+          </Section>
+
+          {/* 題目區塊 */}
+          {quiz.sections.map((section, si) => (
+            <Section key={si}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700">區塊 {si + 1}</span>
+                {quiz.sections.length > 1 && (
+                  <button type="button" onClick={() => setQuiz((q) => ({ ...q, sections: q.sections.filter((_, i) => i !== si) }))}
+                    className="text-xs text-red-500 hover:underline">刪除</button>
+                )}
+              </div>
+              <Field label="區塊標題">
+                <Input value={section.title} onChange={(v) => setQuiz((q) => ({ ...q, sections: q.sections.map((s, i) => i === si ? { ...s, title: v } : s) }))} />
+              </Field>
+              <Field label="題目（每行一題）">
+                <Textarea rows={8} value={section.itemsText} onChange={(v) => setQuiz((q) => ({ ...q, sections: q.sections.map((s, i) => i === si ? { ...s, itemsText: v } : s) }))} />
+              </Field>
+            </Section>
+          ))}
+          <button type="button"
+            onClick={() => setQuiz((q) => ({ ...q, sections: [...q.sections, { title: `第${q.sections.length + 1}部分`, itemsText: "" }] }))}
+            className="text-sm text-blue-600 hover:underline">+ 新增區塊</button>
+
+          {/* 計分標準 */}
+          <Section>
+            <div className="text-sm font-medium text-gray-700 mb-3">計分標準</div>
+            {quiz.scoring.map((s, si) => (
+              <div key={si} className="grid grid-cols-2 gap-3 mb-4 pb-4 border-b border-gray-100 last:border-0 last:mb-0 last:pb-0">
+                <Field label="最低分">
+                  <input type="number" value={s.min} onChange={(e) => setQuiz((q) => ({ ...q, scoring: q.scoring.map((r, i) => i === si ? { ...r, min: e.target.value } : r) }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </Field>
+                <Field label="最高分">
+                  <input type="number" value={s.max} onChange={(e) => setQuiz((q) => ({ ...q, scoring: q.scoring.map((r, i) => i === si ? { ...r, max: e.target.value } : r) }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </Field>
+                <div className="col-span-2">
+                  <Field label="結果標題">
+                    <Input value={s.label} onChange={(v) => setQuiz((q) => ({ ...q, scoring: q.scoring.map((r, i) => i === si ? { ...r, label: v } : r) }))} />
+                  </Field>
+                </div>
+                <div className="col-span-2">
+                  <Field label="結果描述">
+                    <Textarea rows={2} value={s.description} onChange={(v) => setQuiz((q) => ({ ...q, scoring: q.scoring.map((r, i) => i === si ? { ...r, description: v } : r) }))} />
+                  </Field>
+                </div>
+              </div>
+            ))}
+            <button type="button"
+              onClick={() => setQuiz((q) => ({ ...q, scoring: [...q.scoring, { min: "", max: "", label: "", description: "" }] }))}
+              className="text-sm text-blue-600 hover:underline">+ 新增計分範圍</button>
+          </Section>
+
+          {/* 小練習 + 結語 */}
+          <Section>
+            <Field label="今天的小練習（每行一項）">
+              <Textarea value={quiz.practice} onChange={(v) => setQuiz((q) => ({ ...q, practice: v }))} rows={3} />
+            </Field>
+            <Field label="結語" hint="顯示在結果最下方">
+              <Textarea value={quiz.closing} onChange={(v) => setQuiz((q) => ({ ...q, closing: v }))} rows={2} />
+            </Field>
+          </Section>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-800">
+            Email 內文可使用變數：<code className="font-mono">{"{name}"}</code>、<code className="font-mono">{"{score}"}</code>、<code className="font-mono">{"{result_label}"}</code>、<code className="font-mono">{"{result_description}"}</code>
+          </div>
+        </div>
       )}
 
       {/* 底部操作列 */}
