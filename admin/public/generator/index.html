@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>內容工具箱｜許藍方</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF7F2;--bg2:#F4EDE0;--ink:#2A1A0A;--ink-mid:#5C3D1E;
+  --terracotta:#B85C38;--gold:#B8873A;--muted:#9C7A55;--faint:#C4A882;
+  --border:#E2D4C0;--green:#5A8A6A
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Serif TC',serif;font-weight:300;min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:0 24px 100px}
+
+header{padding:36px 0 24px;border-bottom:1px solid var(--border);margin-bottom:32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.logo{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--muted)}
+.header-tag{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint)}
+
+.engine-tabs{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--border);margin-bottom:36px;overflow:hidden}
+.engine-tab{padding:18px 20px;text-align:left;font-size:13px;cursor:pointer;background:white;color:var(--muted);border:none;font-family:'Noto Serif TC',serif;transition:all .25s;border-right:1px solid var(--border)}
+.engine-tab:last-child{border-right:none}
+.engine-tab.active{background:var(--ink);color:white}
+.engine-tab .tab-label{font-size:11px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;opacity:.6}
+.engine-tab .tab-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;line-height:1.3}
+.engine-panel{display:none}
+.engine-panel.active{display:block}
+
+.section{margin-bottom:24px}
+.section-label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:block}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+.field input,.field textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);background:white;font-family:'Noto Serif TC',serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .2s;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--terracotta)}
+.field input::placeholder,.field textarea::placeholder{color:var(--faint)}
+.field-row{display:flex;gap:10px}
+.field-row .field{flex:1}
+
+.generate-btn{width:100%;padding:16px;background:var(--ink);color:white;border:none;font-family:'Noto Serif TC',serif;font-size:14px;letter-spacing:.06em;cursor:pointer;transition:background .3s;margin-top:4px}
+.generate-btn:hover:not(:disabled){background:var(--terracotta)}
+.generate-btn:disabled{opacity:.55;cursor:not-allowed}
+.download-btn{width:100%;padding:15px;background:var(--terracotta);color:white;border:none;font-family:'Noto Serif TC',serif;font-size:14px;letter-spacing:.06em;cursor:pointer;transition:background .3s;margin-top:6px}
+.download-btn:hover{background:var(--ink)}
+
+.copy-btn{font-size:11px;color:var(--muted);background:none;border:1px solid var(--border);padding:4px 10px;cursor:pointer;font-family:'Noto Serif TC',serif;transition:all .2s;white-space:nowrap}
+.copy-btn:hover{border-color:var(--terracotta);color:var(--terracotta)}
+.copy-btn.copied{border-color:var(--green);color:var(--green)}
+
+.results{display:none;margin-top:32px}
+.results.visible{display:block;animation:fadeUp .4s ease}
+.result-card{background:white;border:1px solid var(--border);margin-bottom:14px;position:relative;box-shadow:0 1px 10px rgba(90,50,20,.05)}
+.result-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--terracotta),var(--gold))}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap}
+.card-title{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.card-body{padding:16px}
+.frr{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.frr:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.fkey{font-size:11px;letter-spacing:.1em;color:var(--faint);margin-bottom:5px;text-transform:uppercase}
+.fval{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--ink);line-height:1.6}
+.otext{font-size:13px;line-height:1.9;color:var(--ink-mid);white-space:pre-wrap;word-break:break-word}
+.lp{display:inline-block;background:var(--bg2);border:1px dashed var(--terracotta);color:var(--terracotta);padding:1px 6px;font-size:12px;border-radius:2px}
+.card-hint{font-size:11px;color:var(--faint);margin-top:10px;padding:8px 12px;border-left:2px solid var(--border);line-height:1.7}
+.tag-pill{display:inline-block;background:var(--bg2);border:1px solid var(--border);padding:2px 10px;margin:2px 4px 2px 0;font-size:13px;font-family:'Cormorant Garamond',serif}
+
+.shorts-section{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.shorts-section:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.shorts-grid{display:grid;gap:7px;margin-top:8px}
+.short-item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 12px;background:var(--bg);border:1px solid var(--border)}
+.short-text{font-size:13px;color:var(--ink-mid);line-height:1.7;flex:1}
+.short-copy{font-size:11px;color:var(--muted);background:none;border:1px solid var(--border);padding:3px 8px;cursor:pointer;font-family:'Noto Serif TC',serif;transition:all .2s;flex-shrink:0}
+.short-copy:hover{border-color:var(--terracotta);color:var(--terracotta)}
+.short-copy.copied{border-color:var(--green);color:var(--green)}
+
+/* Engine B */
+.context-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--green);border:1px solid currentColor;padding:4px 12px;margin-bottom:14px}
+.context-badge::before{content:'●';font-size:8px}
+.no-context-note{font-size:12px;color:var(--faint);padding:10px 14px;border:1px dashed var(--border);margin-bottom:14px;line-height:1.7}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.chip{padding:7px 16px;border:1.5px solid var(--border);background:white;font-family:'Noto Serif TC',serif;font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s;user-select:none}
+.chip.active-stage{border-color:var(--gold);color:var(--gold);background:var(--bg2)}
+.chip.active-tone{border-color:var(--terracotta);color:var(--terracotta);background:var(--bg2)}
+
+.reply-options{display:grid;gap:10px}
+.reply-option{border:1.5px solid var(--border);background:white;position:relative;overflow:hidden}
+.reply-option::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--terracotta)}
+.reply-option-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px 16px;border-bottom:1px solid var(--border)}
+.reply-label{font-size:11px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
+.reply-body{padding:14px 14px 14px 16px}
+.reply-text{font-size:13px;line-height:1.9;color:var(--ink-mid);white-space:pre-wrap;word-break:break-word}
+
+.loading::after{content:'';animation:dots 1.2s infinite}
+@keyframes dots{0%{content:''}33%{content:'．'}66%{content:'．．'}100%{content:'．．．'}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:540px){.field-row{flex-direction:column}.engine-tab .tab-title{font-size:15px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="logo">許藍方・內容工具箱</div>
+  <div class="header-tag">v2.0</div>
+</header>
+
+<div class="engine-tabs">
+  <button class="engine-tab active" onclick="switchEngine('assets')">
+    <div class="tab-label">Engine A</div>
+    <div class="tab-title">文章資產包</div>
+  </button>
+  <button class="engine-tab" onclick="switchEngine('reply')">
+    <div class="tab-label">Engine B</div>
+    <div class="tab-title">對話回覆生成器</div>
+  </button>
+</div>
+
+<!-- ═══ ENGINE A ═══ -->
+<div class="engine-panel active" id="panel-assets">
+  <div class="section">
+    <span class="section-label">設定</span>
+    <div class="field-row">
+      <div class="field"><label>引流品名稱</label><input type="text" id="ai-lead" placeholder="例如：約會溺水對照表"></div>
+      <div class="field"><label>Kit 表單 ID</label><input type="text" id="ai-kit" placeholder="例如：9141329"></div>
+    </div>
+    <div class="field"><label>Anthropic API Key（只存在瀏覽器，不會外傳）</label><input type="password" id="ai-key" placeholder="sk-ant-..."></div>
+    <div class="field"><label>模型選擇</label><select id="ai-model" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);background:white;font-family:'Noto Serif TC',serif;font-size:14px;color:var(--ink);outline:none"><option value="claude-haiku-4-5-20251001">Haiku（省配額・速度快）</option><option value="claude-sonnet-4-20250514">Sonnet（品質較高・消耗較多）</option></select></div>
+  </div>
+  <div class="section">
+    <span class="section-label">貼入文章</span>
+    <div class="field"><textarea id="ai-article" style="min-height:200px" placeholder="把你的文章全文貼在這裡⋯⋯"></textarea></div>
+  </div>
+  <button class="generate-btn" id="ai-btn" onclick="runAssets()">開始分析，生成完整資產包</button>
+
+  <div class="results" id="results-assets">
+    <div class="result-card" id="card-landing" style="display:none">
+      <div class="card-header"><div class="card-title">Landing Page 文案</div><button class="copy-btn" onclick="copyEl('landing-text',this)">複製</button></div>
+      <div class="card-body" id="landing-text"></div>
+    </div>
+    <div class="result-card" id="card-cta" style="display:none">
+      <div class="card-header"><div class="card-title">文章結尾 CTA</div><button class="copy-btn" onclick="copyEl('cta-text',this)">複製</button></div>
+      <div class="card-body">
+        <div class="otext" id="cta-text"></div>
+        <div class="card-hint">把 <span style="color:var(--terracotta)">[連結]</span> 換成你的 Landing Page 網址後貼到文章結尾。</div>
+      </div>
+    </div>
+    <div class="result-card" id="card-keyword" style="display:none">
+      <div class="card-header"><div class="card-title">私訊關鍵字回覆</div><button class="copy-btn" onclick="copyEl('keyword-reply-text',this)">複製回覆</button></div>
+      <div class="card-body">
+        <div class="frr"><div class="fkey">建議關鍵字</div><div id="keyword-list"></div></div>
+        <div class="frr">
+          <div class="fkey">收到關鍵字後，你回的第一則</div>
+          <div class="otext" id="keyword-reply-text"></div>
+          <div class="card-hint">把 <span style="color:var(--terracotta)">[連結]</span> 換成你的網址。</div>
+        </div>
+      </div>
+    </div>
+    <div class="result-card" id="card-faq" style="display:none">
+      <div class="card-header"><div class="card-title">常見問題回覆模板</div><div style="font-size:11px;color:var(--faint)">點各題右上角複製</div></div>
+      <div class="card-body" id="faq-body"></div>
+    </div>
+    <div class="result-card" id="card-consult" style="display:none">
+      <div class="card-header"><div class="card-title">諮詢導流話術</div><div style="font-size:11px;color:var(--faint)">點各則右上角複製</div></div>
+      <div class="card-body" id="consult-body"></div>
+    </div>
+    <div class="result-card" id="card-shorts" style="display:none">
+      <div class="card-header"><div class="card-title">鍵盤短句</div><div style="font-size:11px;color:var(--faint)">點各句右側複製</div></div>
+      <div class="card-body" id="shorts-body"></div>
+    </div>
+    <div class="result-card" id="card-email" style="display:none">
+      <div class="card-header"><div class="card-title">Kit 歡迎信</div><button class="copy-btn" onclick="copyEmail(this)">複製</button></div>
+      <div class="card-body">
+        <div class="frr"><div class="fkey">主旨</div><div class="fval" id="email-subject"></div></div>
+        <div class="frr"><div class="fkey">正文</div><div class="otext" id="email-body"></div></div>
+      </div>
+    </div>
+    <button class="download-btn" id="dl-btn" style="display:none" onclick="downloadHTML()">→ 下載 Landing Page HTML</button>
+  </div>
+</div>
+
+<!-- ═══ ENGINE B ═══ -->
+<div class="engine-panel" id="panel-reply">
+  <div class="section">
+    <span class="section-label">文章脈絡</span>
+    <div id="context-status"></div>
+    <div class="field">
+      <label>補充說明（可選）</label>
+      <textarea id="reply-context-extra" style="min-height:70px" placeholder="例如：這篇在講約會溺水，引流到對照表，最終想讓對方考慮個人療癒課程⋯⋯"></textarea>
+    </div>
+  </div>
+  <div class="section">
+    <span class="section-label">對話設定</span>
+    <div class="field">
+      <label>對方目前說的話</label>
+      <textarea id="reply-message" style="min-height:100px" placeholder="直接貼對方的原文訊息或留言⋯⋯"></textarea>
+    </div>
+    <div class="field">
+      <label>對話階段</label>
+      <div class="chips" id="stage-chips">
+        <div class="chip active-stage" data-v="初次接觸">初次接觸</div>
+        <div class="chip" data-v="開始有共鳴">開始有共鳴</div>
+        <div class="chip" data-v="在考慮課程">在考慮課程</div>
+        <div class="chip" data-v="需要被推一把">需要被推一把</div>
+        <div class="chip" data-v="只是聊聊">只是聊聊</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>語氣</label>
+      <div class="chips" id="tone-chips">
+        <div class="chip active-tone" data-v="溫暖陪伴">溫暖陪伴</div>
+        <div class="chip" data-v="直接清晰">直接清晰</div>
+        <div class="chip" data-v="輕鬆自在">輕鬆自在</div>
+        <div class="chip" data-v="溫柔引導">溫柔引導</div>
+      </div>
+    </div>
+    <div class="field"><label>Anthropic API Key</label><input type="password" id="reply-key" placeholder="sk-ant-..."></div>
+    <div class="field"><label>模型選擇</label><select id="reply-model" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);background:white;font-family:'Noto Serif TC',serif;font-size:14px;color:var(--ink);outline:none"><option value="claude-haiku-4-5-20251001">Haiku（省配額・速度快）</option><option value="claude-sonnet-4-20250514">Sonnet（品質較高・消耗較多）</option></select></div>
+  </div>
+  <button class="generate-btn" id="reply-btn" onclick="runReply()">生成 3 則回覆選項</button>
+  <div class="results" id="results-reply">
+    <div class="result-card">
+      <div class="card-header"><div class="card-title">回覆選項</div><div style="font-size:11px;color:var(--faint)">選一則貼上</div></div>
+      <div class="card-body"><div class="reply-options" id="reply-options"></div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+let pageData=null, assetSummary=null;
+
+window.addEventListener('load',()=>{
+  const k=localStorage.getItem('anthropic_key');
+  if(k){document.getElementById('ai-key').value=k;document.getElementById('reply-key').value=k;}
+  const m=localStorage.getItem('claude_model')||'claude-haiku-4-5-20251001';
+  document.getElementById('ai-model').value=m;document.getElementById('reply-model').value=m;
+  updateContextStatus();
+  document.getElementById('stage-chips').addEventListener('click',e=>{
+    const c=e.target.closest('.chip');if(!c)return;
+    document.querySelectorAll('#stage-chips .chip').forEach(x=>x.classList.remove('active-stage'));
+    c.classList.add('active-stage');
+  });
+  document.getElementById('tone-chips').addEventListener('click',e=>{
+    const c=e.target.closest('.chip');if(!c)return;
+    document.querySelectorAll('#tone-chips .chip').forEach(x=>x.classList.remove('active-tone'));
+    c.classList.add('active-tone');
+  });
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='ai-key'||e.target.id==='reply-key'){
+    const v=e.target.value;
+    localStorage.setItem('anthropic_key',v);
+    document.getElementById(e.target.id==='ai-key'?'reply-key':'ai-key').value=v;
+  }
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='ai-model'||e.target.id==='reply-model'){
+    const v=e.target.value;
+    localStorage.setItem('claude_model',v);
+    document.getElementById(e.target.id==='ai-model'?'reply-model':'ai-model').value=v;
+  }
+});
+function switchEngine(e){
+  document.querySelectorAll('.engine-tab').forEach((t,i)=>t.classList.toggle('active',(e==='assets'&&i===0)||(e==='reply'&&i===1)));
+  document.getElementById('panel-assets').classList.toggle('active',e==='assets');
+  document.getElementById('panel-reply').classList.toggle('active',e==='reply');
+  if(e==='reply')updateContextStatus();
+}
+function updateContextStatus(){
+  const el=document.getElementById('context-status');
+  if(!el)return;
+  el.innerHTML=assetSummary
+    ?`<div class="context-badge">已載入：${assetSummary.lead}</div>`
+    :`<div class="no-context-note">尚未生成資產包——可先去 Engine A 分析文章，或在下方手動補充說明。</div>`;
+}
+
+// ─── ENGINE A ───────────────────────────────────────────────────────────
+async function runAssets(){
+  const article=document.getElementById('ai-article').value.trim();
+  const lead=document.getElementById('ai-lead').value.trim()||'免費資源';
+  const kitId=document.getElementById('ai-kit').value.trim();
+  const apiKey=document.getElementById('ai-key').value.trim();
+  const model=document.getElementById('ai-model').value;
+  if(!article)return alert('請先貼入文章內容');
+  if(!apiKey)return alert('請填入 Anthropic API Key');
+  const btn=document.getElementById('ai-btn');
+  btn.innerHTML='<span class="loading">AI 分析中</span>';btn.disabled=true;
+
+  const prompt=`你是許藍方的內容助理。許藍方是一位希塔療癒導師和關係靈氣療癒師，文字風格溫暖、直接、有詩意，說話像一個真實的人，不像行銷。
+
+任務：根據以下文章，生成「${lead}」的完整內容資產包。
+
+風格要求：
+- 有溫度，像一個懂你的朋友在說話
+- 絕對不用「索取」「領取」「獲取」「免費」這些行銷字眼
+- 標題要有畫面感
+- 金句直接從文章萃取，不改寫
+- 按鈕文字是一個內心的宣告，不是一個指令
+
+按鈕文字好範例：「我準備好看見自己了 →」「我不想再溺水了 →」「帶我去看看 →」
+按鈕文字壞範例：「免費索取」「領取工具包」「立即獲取」「確認訂閱」
+
+歡迎信好範例開頭：「謝謝你願意停下來看這件事。能點進來的人，通常不是隨便看看——是因為某個地方被說中了。」
+
+文章內容：
+${article}
+
+只回 JSON，不要有其他文字：
+{
+  "page_title":"頁面標題，有感覺，帶入核心問題，60字內",
+  "og_desc":"社群分享預覽，80字內",
+  "t1":"主標題第一行，8字內",
+  "t2":"斜體第二行，6字內",
+  "sub":"副標題，20字內",
+  "quote":"從文章直接萃取最打動人的一句話，不改寫",
+  "cite":"這句話出自哪裡的說明",
+  "gets":[
+    {"icon":"emoji","name":"名稱","desc":"一句說明，25字內"},
+    {"icon":"emoji","name":"名稱","desc":"25字內"},
+    {"icon":"emoji","name":"名稱","desc":"25字內"}
+  ],
+  "form_title":"表單標題，像邀請，15字內，不用索取領取獲取",
+  "form_note":"一句說明填了之後會收到什麼",
+  "btn":"按鈕文字，10字內，結尾加 →，不用索取領取獲取免費",
+  "success_t1":"成功畫面標題第一部分",
+  "success_em":"斜體強調詞，溫暖",
+  "success_body":"成功後說的話，像朋友說的，三行內",
+  "cta":"文章結尾引流。三段換行：第一段2-3句溫暖承接文章情緒｜第二段帶[連結]自然引出資源｜第三段提醒去垃圾郵件找信。不超過100字。",
+  "keyword_reply":{
+    "keywords":["2-3個讀者可私訊的關鍵字，短且好記"],
+    "reply":"收到關鍵字後的第一則回覆。第一句接住對方的感受，第二句帶[連結]，第三句提醒垃圾郵件。像朋友回訊息，不超過60字。"
+  },
+  "faq":[
+    {"q":"讀者最可能私訊問的第一個問題（用讀者口語寫）","a":"許藍方的回覆。先讓對方感覺被理解，再給方向。適合帶資源就用[連結]。不超過80字。"},
+    {"q":"第二個可能問的問題（口語）","a":"對應回覆，不超過80字"},
+    {"q":"第三個可能問的問題（口語）","a":"對應回覆，不超過80字"}
+  ],
+  "consult_scripts":[
+    {"label":"對方表達共鳴但沒進一步行動","script":"承接對方感受，自然帶出可以有個一對一深聊，像朋友說「如果你想的話⋯⋯」，帶[諮詢連結]。不超過80字。"},
+    {"label":"對方說在考慮但猶豫","script":"理解猶豫，說清楚諮詢是安全沒有壓力的，給對方一個能跨出去的理由，帶[諮詢連結]。不超過80字。"},
+    {"label":"對方問課程是什麼","script":"不直接列服務，先說適合什麼樣的人讓對方對號入座，再帶[諮詢連結]。不超過100字。"}
+  ],
+  "keyboard_shorts":{
+    "ig_stories":["IG限動短句1，有畫面感可直接貼，15字內","短句2，15字內","短句3，15字內","短句4，15字內"],
+    "quote_cards":["截圖金句1，從文章萃取或改寫，適合單獨截圖，25字內","金句2，25字內","金句3，25字內"],
+    "comment_replies":["留言快速回應1：讀者說「好有共鳴」時，你的回法，溫暖簡短","回應2：讀者問「然後呢」時的回法","回應3：讀者說「我也是」時的回法","回應4：讀者說謝謝時的回法"]
+  },
+  "email_subject":"歡迎信主旨，帶入 {{ subscriber.first_name }}，不要用感謝訂閱",
+  "email_body":"歡迎信正文。以 {{ subscriber.first_name }}，你好 開頭。參考好範例風格。2-3句說清楚。最後邀請回信說感受。署名藍方。不超過120字。",
+  "confirm_btn":"Kit確認信按鈕。讀者需點此完成訂閱——要讓他們感覺是對自己的宣告不是手續。呼應文章核心情緒，10字內，不用確認訂閱領取索取，可加 →。",
+  "article_summary":"給內部用的文章摘要，50字內，說清楚這篇在講什麼、核心情緒、適合什麼樣的人"
+}`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model,max_tokens:4000,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    if(!res.ok||data.error){
+      const msg=data.error?.message||'API 錯誤 '+res.status;
+      if(msg.includes('quota')||msg.includes('credit')||msg.includes('billing')||res.status===429){
+        throw new Error('API 配額已用完。請至 console.anthropic.com 充值或升級方案，或切換到 Haiku 模型節省配額。');
+      }
+      throw new Error(msg);
+    }
+    const r=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+    pageData={...r,kitId,name:'許藍方',title:'希塔療癒導師・關係靈氣療癒師'};
+    assetSummary={lead,article_summary:r.article_summary};
+    renderAssets(r);
+  }catch(err){alert('生成失敗：'+err.message);console.error(err);}
+  btn.innerHTML='重新分析';btn.disabled=false;
+}
+
+function hl(t){return t?t.replace(/\[連結\]/g,'<span class="lp">[連結]</span>').replace(/\[諮詢連結\]/g,'<span class="lp">[諮詢連結]</span>'):'';}
+
+function renderAssets(r){
+  // Landing Page 文案
+  document.getElementById('landing-text').innerHTML=`
+    <div class="frr"><div class="fkey">主標題</div><div class="fval">${r.t1} / <em>${r.t2}</em></div></div>
+    <div class="frr"><div class="fkey">副標題</div><div class="fval">${r.sub}</div></div>
+    <div class="frr"><div class="fkey">金句</div><div class="fval">「${r.quote}」</div></div>
+    <div class="frr"><div class="fkey">賣點</div><div class="fval">${r.gets.map(g=>`${g.icon} ${g.name}：${g.desc}`).join('<br>')}</div></div>
+    <div class="frr"><div class="fkey">表單按鈕</div><div class="fval">${r.btn}</div></div>
+    <div class="frr"><div class="fkey">Kit 確認信按鈕</div><div class="fval">${r.confirm_btn}</div></div>`;
+  document.getElementById('card-landing').style.display='block';
+
+  // CTA
+  document.getElementById('cta-text').innerHTML=hl(r.cta);
+  document.getElementById('card-cta').style.display='block';
+
+  // 私訊關鍵字
+  if(r.keyword_reply){
+    document.getElementById('keyword-list').innerHTML=r.keyword_reply.keywords.map(k=>`<span class="tag-pill">「${k}」</span>`).join('');
+    document.getElementById('keyword-reply-text').innerHTML=hl(r.keyword_reply.reply);
+    document.getElementById('card-keyword').style.display='block';
+  }
+
+  // FAQ
+  if(r.faq){
+    document.getElementById('faq-body').innerHTML=r.faq.map(item=>`
+      <div class="frr">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div class="fkey">讀者可能問</div>
+          <button class="copy-btn" onclick="copyRaw(${JSON.stringify(item.a)},this)">複製回覆</button>
+        </div>
+        <div style="font-size:14px;color:var(--ink);margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-style:italic;line-height:1.6">「${item.q}」</div>
+        <div class="fkey" style="margin-bottom:5px">你的回覆</div>
+        <div class="otext">${hl(item.a)}</div>
+      </div>`).join('');
+    document.getElementById('card-faq').style.display='block';
+  }
+
+  // 諮詢導流
+  if(r.consult_scripts){
+    document.getElementById('consult-body').innerHTML=r.consult_scripts.map(item=>`
+      <div class="frr">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div style="font-size:11px;letter-spacing:.08em;color:var(--gold);text-transform:uppercase">${item.label}</div>
+          <button class="copy-btn" onclick="copyRaw(${JSON.stringify(item.script)},this)">複製</button>
+        </div>
+        <div class="otext">${hl(item.script)}</div>
+      </div>`).join('');
+    document.getElementById('card-consult').style.display='block';
+  }
+
+  // 鍵盤短句
+  if(r.keyboard_shorts){
+    const ks=r.keyboard_shorts;
+    const section=(title,items,wrap)=>`
+      <div class="shorts-section">
+        <div class="fkey">${title}</div>
+        <div class="shorts-grid">${items.map(s=>`
+          <div class="short-item">
+            <div class="short-text">${wrap?`「${s}」`:s}</div>
+            <button class="short-copy" onclick="copyRaw(${JSON.stringify(s)},this)">複製</button>
+          </div>`).join('')}
+        </div>
+      </div>`;
+    document.getElementById('shorts-body').innerHTML=
+      (ks.ig_stories?.length?section('IG 限動短句',ks.ig_stories,false):'')+
+      (ks.quote_cards?.length?section('截圖金句',ks.quote_cards,true):'')+
+      (ks.comment_replies?.length?section('留言區快速回應',ks.comment_replies,false):'');
+    document.getElementById('card-shorts').style.display='block';
+  }
+
+  // 歡迎信
+  document.getElementById('email-subject').textContent=r.email_subject;
+  document.getElementById('email-body').textContent=r.email_body;
+  document.getElementById('card-email').style.display='block';
+
+  document.getElementById('dl-btn').style.display='block';
+  const res=document.getElementById('results-assets');
+  res.classList.add('visible');
+  res.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ─── ENGINE B ───────────────────────────────────────────────────────────
+async function runReply(){
+  const message=document.getElementById('reply-message').value.trim();
+  const extra=document.getElementById('reply-context-extra').value.trim();
+  const apiKey=document.getElementById('reply-key').value.trim();
+  const model=document.getElementById('reply-model').value;
+  const stage=document.querySelector('#stage-chips .chip.active-stage')?.dataset.v||'初次接觸';
+  const tone=document.querySelector('#tone-chips .chip.active-tone')?.dataset.v||'溫暖陪伴';
+  if(!message)return alert('請貼入對方的訊息');
+  if(!apiKey)return alert('請填入 Anthropic API Key');
+
+  const btn=document.getElementById('reply-btn');
+  btn.innerHTML='<span class="loading">生成中</span>';btn.disabled=true;
+
+  let ctx='';
+  if(assetSummary) ctx+=`引流品：${assetSummary.lead}\n文章摘要：${assetSummary.article_summary||''}\n`;
+  if(extra) ctx+=`補充說明：${extra}\n`;
+
+  const prompt=`你是許藍方本人，正在用手機回覆讀者私訊。
+許藍方是希塔療癒導師和關係靈氣療癒師，文字溫暖、直接、有詩意，說話像真實的人，不像業務也不像客服。
+
+${ctx?`【文章脈絡】\n${ctx}\n`:''}【對話設定】
+對話階段：${stage}
+語氣要求：${tone}
+
+【對方說的話】
+「${message}」
+
+生成 3 則不同角度的回覆，都是許藍方本人會說的話，可以直接貼上。
+每則角度或切入點都不同，給對方選擇。
+如果適合帶連結，用[連結]或[諮詢連結]佔位。
+
+只回 JSON，不要有其他文字：
+{
+  "replies":[
+    {"label":"這則的策略，8字內（例如：先接住再引導）","text":"回覆正文，不超過80字"},
+    {"label":"第二則的策略","text":"第二則，角度或語氣和第一則不同，不超過80字"},
+    {"label":"第三則的策略","text":"第三則，可以更短或更直接，不超過60字"}
+  ]
+}`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model,max_tokens:1200,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    if(!res.ok||data.error){
+      const msg=data.error?.message||'API 錯誤 '+res.status;
+      if(msg.includes('quota')||msg.includes('credit')||msg.includes('billing')||res.status===429){
+        throw new Error('API 配額已用完。請至 console.anthropic.com 充值或升級方案，或切換到 Haiku 模型節省配額。');
+      }
+      throw new Error(msg);
+    }
+    const r=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+    document.getElementById('reply-options').innerHTML=r.replies.map(rep=>`
+      <div class="reply-option">
+        <div class="reply-option-header">
+          <div class="reply-label">${rep.label}</div>
+          <button class="copy-btn" onclick="copyRaw(${JSON.stringify(rep.text)},this)">複製</button>
+        </div>
+        <div class="reply-body"><div class="reply-text">${hl(rep.text)}</div></div>
+      </div>`).join('');
+    const results=document.getElementById('results-reply');
+    results.classList.add('visible');
+    results.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(err){alert('生成失敗：'+err.message);console.error(err);}
+  btn.innerHTML='重新生成';btn.disabled=false;
+}
+
+// ─── Download HTML ───────────────────────────────────────────────────────
+function downloadHTML(){
+  if(!pageData)return;
+  const d=pageData;
+  const html=`<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${d.page_title||''}</title>
+<meta name="description" content="${d.og_desc||''}">
+<meta property="og:title" content="${d.page_title||''}">
+<meta property="og:description" content="${d.og_desc||''}">
+<meta property="og:type" content="website"><meta property="og:locale" content="zh_TW">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FBF7F2;--bg2:#F4EDE0;--ink:#2A1A0A;--ink-mid:#5C3D1E;--terracotta:#B85C38;--gold:#B8873A;--muted:#9C7A55;--faint:#C4A882;--border:#E2D4C0}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Serif TC',serif;font-weight:300;overflow-x:hidden}
+.wrap{max-width:600px;margin:0 auto;padding:0 28px}
+header{padding:40px 0 0;opacity:0;animation:up .7s .1s ease forwards}
+.site-tag{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;letter-spacing:.12em;color:var(--muted)}
+.hero{padding:52px 0 44px}
+.hero-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--terracotta);margin-bottom:28px;opacity:0;animation:up .7s .2s ease forwards}
+.hero-label::before{content:'';display:block;width:24px;height:1px;background:var(--terracotta)}
+h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(38px,8vw,60px);line-height:1.2;color:var(--ink);margin-bottom:10px;opacity:0;animation:up .7s .3s ease forwards}
+h1 em{font-style:italic;color:var(--terracotta)}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(16px,3vw,20px);color:var(--muted);margin-bottom:36px;line-height:1.6;opacity:0;animation:up .7s .4s ease forwards}
+.pull{border-left:2px solid var(--terracotta);padding:18px 22px;margin-bottom:48px;background:var(--bg2);opacity:0;animation:up .7s .5s ease forwards}
+.pull p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(16px,3vw,20px);line-height:1.8;color:var(--ink-mid)}
+.pull cite{display:block;margin-top:10px;font-size:12px;letter-spacing:.1em;color:var(--faint);font-style:normal}
+.gets{margin-bottom:48px;opacity:0;animation:up .7s .55s ease forwards}
+.gets-title{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.get-item{display:flex;gap:18px;padding:18px 0;border-bottom:1px solid var(--border)}
+.get-item:first-of-type{border-top:1px solid var(--border)}
+.get-icon{font-size:22px;flex-shrink:0;padding-top:2px}
+.get-name{font-size:15px;color:var(--ink);margin-bottom:4px}
+.get-desc{font-size:13px;color:var(--muted);line-height:1.8}
+.form-box{background:white;border:1px solid var(--border);padding:40px 36px;margin-bottom:60px;opacity:0;animation:up .7s .65s ease forwards;position:relative;overflow:hidden;box-shadow:0 2px 20px rgba(90,50,20,.06)}
+.form-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--terracotta),var(--gold))}
+.form-title{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,26px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.form-note{font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.85}
+.field{margin-bottom:12px}.field label{display:block;font-size:12px;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+.field input{display:block;width:100%;padding:13px 16px;border:1.5px solid var(--border);background:var(--bg);font-family:'Noto Serif TC',serif;font-size:15px;color:var(--ink);outline:none;transition:border-color .2s}
+.field input:focus{border-color:var(--terracotta)}.field input::placeholder{color:var(--faint)}
+.submit-btn{display:block;width:100%;margin-top:16px;padding:16px;background:var(--ink);color:white;border:none;font-family:'Noto Serif TC',serif;font-size:15px;letter-spacing:.06em;cursor:pointer;transition:background .3s}
+.submit-btn:hover{background:var(--terracotta)}
+.privacy{margin-top:14px;font-size:11px;color:var(--faint);text-align:center}
+.success{display:none;text-align:center;padding:12px 0}
+.success-icon{font-size:40px;margin-bottom:20px}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,5vw,34px);font-weight:400;color:var(--ink);margin-bottom:16px;line-height:1.4}
+.success-title em{font-style:italic;color:var(--terracotta)}
+.success-body{font-size:14px;color:var(--ink-mid);line-height:1.95;margin-bottom:20px;white-space:pre-line}
+.success-note{font-size:12px;color:var(--faint);line-height:1.8;padding:14px 18px;border:1px solid var(--border)}
+footer{padding:32px 0 52px;border-top:1px solid var(--border);opacity:0;animation:up .7s .75s ease forwards}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-name{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--muted)}
+.footer-note{font-size:11px;color:var(--faint);line-height:1.8;text-align:right}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@media(max-width:480px){.form-box{padding:28px 20px}.footer-inner{flex-direction:column;align-items:flex-start}.footer-note{text-align:left}}
+</style></head>
+<body><div class="wrap">
+<header><div class="site-tag">${d.name}・${d.title}</div></header>
+<section class="hero">
+  <div class="hero-label">免費資源</div>
+  <h1>${d.t1}<br><em>${d.t2}</em></h1>
+  <p class="hero-sub">${d.sub}</p>
+  <div class="pull"><p>「${d.quote}」</p><cite>—— ${d.cite}</cite></div>
+  <div class="gets">
+    <div class="gets-title">你會收到</div>
+    ${d.gets.map(g=>`<div class="get-item"><div class="get-icon">${g.icon}</div><div><div class="get-name">${g.name}</div><div class="get-desc">${g.desc}</div></div></div>`).join('\n    ')}
+  </div>
+</section>
+<div class="form-box">
+  <div id="form-area">
+    <div class="form-title">${d.form_title}</div>
+    <p class="form-note">${d.form_note}</p>
+    <form id="kit-form" onsubmit="submitForm(event)">
+      <div class="field"><label>你的名字</label><input type="text" name="first_name" placeholder="請輸入名字" required></div>
+      <div class="field"><label>Email 信箱</label><input type="email" name="email_address" placeholder="請輸入有效的 Email" required></div>
+      <button type="submit" class="submit-btn">${d.btn}</button>
+    </form>
+    <p class="privacy">🔒 你的資訊不會被分享給任何第三方</p>
+  </div>
+  <div class="success" id="success-area">
+    <div class="success-icon">✉️</div>
+    <div class="success-title">${d.success_t1}<em>${d.success_em}</em></div>
+    <p class="success-body">${d.success_body}</p>
+    <div class="success-note">找不到信？記得檢查垃圾郵件，或把 ${d.name} 的信箱加入聯絡人。</div>
+  </div>
+</div>
+<footer><div class="footer-inner">
+  <div class="footer-name">${d.name}</div>
+  <div class="footer-note">填寫即同意接收電子報<br>你的 email 不會分享給任何第三方</div>
+</div></footer>
+</div>
+<script>
+async function submitForm(e){
+  e.preventDefault();const btn=e.target.querySelector('button');
+  btn.textContent='準備中⋯';btn.disabled=true;
+  try{await fetch('https://app.convertkit.com/forms/${d.kitId}/subscriptions',{method:'POST',body:new FormData(e.target),mode:'no-cors'});}catch(err){}
+  document.getElementById('form-area').style.display='none';
+  const s=document.getElementById('success-area');s.style.display='block';s.style.animation='fadeIn .5s ease forwards';
+}
+<\/script></body></html>`;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  a.download='index.html';a.click();
+}
+
+// ─── Copy helpers ────────────────────────────────────────────────────────
+function copyRaw(text,btn){
+  navigator.clipboard.writeText(text).then(()=>{
+    const o=btn.textContent;btn.textContent='已複製 ✓';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},2000);
+  });
+}
+function copyEl(id,btn){
+  const el=document.getElementById(id);
+  navigator.clipboard.writeText(el.innerText||el.textContent).then(()=>{
+    const o=btn.textContent;btn.textContent='已複製 ✓';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},2000);
+  });
+}
+function copyEmail(btn){
+  const text='主旨：'+document.getElementById('email-subject').textContent+'\n\n'+document.getElementById('email-body').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='已複製 ✓';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='複製';btn.classList.remove('copied');},2000);
+  });
+}
+</script>
+</body>
+</html>
