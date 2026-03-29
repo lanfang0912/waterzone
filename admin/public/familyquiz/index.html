@@ -737,7 +737,7 @@ async function handleEmailSubmit(e) {
   fetch('https://admin.urland.com.tw/api/public/subscribe', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ slug: 'familyquiz', name, email, note: '家庭測驗結果：' + type }),
+    body: JSON.stringify({ slug: 'familyquiz', name, email, note: type, result_label: TYPES[type] ? TYPES[type].badge.replace(/^[🔴🟡⚪]+\s*/,'') : '' }),
   }).catch(() => {});
 
   displayResult();

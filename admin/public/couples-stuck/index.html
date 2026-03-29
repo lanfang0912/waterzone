@@ -405,7 +405,7 @@ async function submitForm(e) {
       mode: 'no-cors',
     });
   } catch (err) {}
-  const _fd=new FormData(e.target);fetch('https://admin.urland.com.tw/api/public/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:'couples-stuck',name:_fd.get('first_name')||'',email:_fd.get('email_address')||''})}).catch(()=>{});
+  const _fd=new FormData(e.target);fetch('https://admin.urland.com.tw/api/public/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:'couples-stuck',name:_fd.get('first_name')||'',email:_fd.get('email_address')||'',note:resultType,result_label:(typeInfo[resultType]?resultType+'型｜'+typeInfo[resultType].name:''),result_description:(typeInfo[resultType]?typeInfo[resultType].opening.replace(/\n/g,' '):'')})}).catch(()=>{});
 
   // 更新網址讓信件連結可以回來看結果
   history.replaceState(null, '', `?type=${resultType}`);
