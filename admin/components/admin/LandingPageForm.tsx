@@ -11,6 +11,7 @@ type QuizSection = { title: string; itemsText: string };
 type ScoreRange = { min: string; max: string; label: string; description: string };
 type QuizFormData = {
   intro: string;
+  quiz_type: "score" | "type";
   sections: QuizSection[];
   scoring: ScoreRange[];
   practice: string;
@@ -20,6 +21,7 @@ type QuizFormData = {
 function defaultQuiz(): QuizFormData {
   return {
     intro: "在符合你的狀況前打勾，不用想太久，第一直覺最準。",
+    quiz_type: "score",
     sections: [
       { title: "第一部分", itemsText: "" },
       { title: "第二部分", itemsText: "" },
@@ -37,6 +39,7 @@ function defaultQuiz(): QuizFormData {
 function quizToJson(q: QuizFormData): Record<string, unknown> {
   return {
     intro: q.intro,
+    quiz_type: q.quiz_type,
     sections: q.sections.map((s) => ({
       title: s.title,
       items: s.itemsText.split("\n").map((l) => l.trim()).filter(Boolean),
@@ -54,6 +57,7 @@ function jsonToQuiz(json: Record<string, unknown>): QuizFormData {
   type RawScore = { min?: number; max?: number; label?: string; description?: string };
   return {
     intro: (json.intro as string) ?? "",
+    quiz_type: (json.quiz_type as "score" | "type") ?? "score",
     sections: ((json.sections as RawSection[]) ?? []).map((s) => ({
       title: s.title ?? "",
       itemsText: (s.items ?? []).join("\n"),
@@ -339,6 +343,32 @@ export function LandingPageForm({ page }: { page?: LandingPage }) {
       {tab === "quiz" && (
         <div className="space-y-6">
           <Section>
+            <Field label="測驗模式">
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setQuiz((q) => ({ ...q, quiz_type: "score" }))}
+                  className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
+                    quiz.quiz_type === "score"
+                      ? "border-blue-600 bg-blue-50 text-blue-700"
+                      : "border-gray-300 text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  分數制（勾越多分越高）
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setQuiz((q) => ({ ...q, quiz_type: "type" }))}
+                  className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
+                    quiz.quiz_type === "type"
+                      ? "border-blue-600 bg-blue-50 text-blue-700"
+                      : "border-gray-300 text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  類型制（哪區勾最多顯示那型）
+                </button>
+              </div>
+            </Field>
             <Field label="說明文字（頁面頂部）">
               <Textarea value={quiz.intro} onChange={(v) => setQuiz((q) => ({ ...q, intro: v }))} rows={2} />
             </Field>
@@ -368,17 +398,29 @@ export function LandingPageForm({ page }: { page?: LandingPage }) {
 
           {/* 計分標準 */}
           <Section>
-            <div className="text-sm font-medium text-gray-700 mb-3">計分標準</div>
+            <div className="text-sm font-medium text-gray-700 mb-1">
+              {quiz.quiz_type === "type" ? "各型結果" : "計分標準"}
+            </div>
+            {quiz.quiz_type === "type" && (
+              <p className="text-xs text-gray-400 mb-3">第 1 個結果對應區塊 1，第 2 個結果對應區塊 2，以此類推。</p>
+            )}
             {quiz.scoring.map((s, si) => (
               <div key={si} className="grid grid-cols-2 gap-3 mb-4 pb-4 border-b border-gray-100 last:border-0 last:mb-0 last:pb-0">
-                <Field label="最低分">
-                  <input type="number" value={s.min} onChange={(e) => setQuiz((q) => ({ ...q, scoring: q.scoring.map((r, i) => i === si ? { ...r, min: e.target.value } : r) }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </Field>
-                <Field label="最高分">
-                  <input type="number" value={s.max} onChange={(e) => setQuiz((q) => ({ ...q, scoring: q.scoring.map((r, i) => i === si ? { ...r, max: e.target.value } : r) }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </Field>
+                {quiz.quiz_type === "score" && (
+                  <>
+                    <Field label="最低分">
+                      <input type="number" value={s.min} onChange={(e) => setQuiz((q) => ({ ...q, scoring: q.scoring.map((r, i) => i === si ? { ...r, min: e.target.value } : r) }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    </Field>
+                    <Field label="最高分">
+                      <input type="number" value={s.max} onChange={(e) => setQuiz((q) => ({ ...q, scoring: q.scoring.map((r, i) => i === si ? { ...r, max: e.target.value } : r) }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    </Field>
+                  </>
+                )}
+                {quiz.quiz_type === "type" && (
+                  <div className="col-span-2 text-xs text-gray-400 font-medium">結果 {si + 1}（對應區塊 {si + 1}）</div>
+                )}
                 <div className="col-span-2">
                   <Field label="結果標題">
                     <Input value={s.label} onChange={(v) => setQuiz((q) => ({ ...q, scoring: q.scoring.map((r, i) => i === si ? { ...r, label: v } : r) }))} />
@@ -393,7 +435,9 @@ export function LandingPageForm({ page }: { page?: LandingPage }) {
             ))}
             <button type="button"
               onClick={() => setQuiz((q) => ({ ...q, scoring: [...q.scoring, { min: "", max: "", label: "", description: "" }] }))}
-              className="text-sm text-blue-600 hover:underline">+ 新增計分範圍</button>
+              className="text-sm text-blue-600 hover:underline">
+              {quiz.quiz_type === "type" ? "+ 新增結果" : "+ 新增計分範圍"}
+            </button>
           </Section>
 
           {/* 小練習 + 結語 */}
