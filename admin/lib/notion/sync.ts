@@ -120,6 +120,7 @@ export async function importLandingPagesFromNotion(): Promise<LandingPage[]> {
   }
 
   const { supabaseAdmin } = await import("@/lib/db/client");
+  const { createArticle } = await import("@/lib/db/articles");
   const imported: LandingPage[] = [];
 
   for (const notionPage of res.results) {
@@ -164,6 +165,30 @@ export async function importLandingPagesFromNotion(): Promise<LandingPage[]> {
       .single();
 
     if (error) throw new Error(error.message);
+
+    // 同時建立對應的部落格草稿
+    const slug = payload.slug;
+    const existing = await supabaseAdmin
+      .from("articles")
+      .select("id")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (!existing.data) {
+      await createArticle({
+        title:             payload.hero_title ?? payload.name,
+        slug,
+        excerpt:           payload.hero_subtitle,
+        content:           payload.email_body,
+        status:            "draft",
+        landing_page_slug: slug,
+        seo_title:         payload.seo_title,
+        seo_description:   payload.seo_description,
+        cover_image:       null,
+        summary_image:     null,
+        published_at:      null,
+      });
+    }
 
     await notion.pages.update({
       page_id: notionPage.id,
