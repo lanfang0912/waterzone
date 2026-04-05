@@ -11,6 +11,7 @@ export interface Article {
   seo_title: string | null;
   seo_description: string | null;
   cover_image: string | null;
+  summary_image: string | null;
   published_at: string | null;
   created_at: string;
   updated_at: string;

@@ -57,6 +57,17 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </article>
 
+        {/* Summary Image */}
+        {article.summary_image && (
+          <div className="mt-8">
+            <img
+              src={article.summary_image}
+              alt="全文摘要"
+              className="w-full object-contain bg-stone-50 rounded-2xl"
+            />
+          </div>
+        )}
+
         {/* CTA */}
         {landingPage && (
           <div className="mt-12 bg-white border border-stone-100 rounded-2xl px-6 py-6 text-center">
