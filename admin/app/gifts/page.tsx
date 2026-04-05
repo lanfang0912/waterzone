@@ -39,7 +39,7 @@ export default async function ResourcesPage() {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C6.48 2 2 6.02 2 11c0 3.09 1.61 5.82 4.07 7.55L5 21l3.23-1.62C9.35 19.77 10.65 20 12 20c5.52 0 10-4.02 10-9S17.52 2 12 2z"/>
           </svg>
-          加入 LINE 社群
+          加入 LINE 社群「大女主的逆襲人生」
         </a>
       </div>
 
