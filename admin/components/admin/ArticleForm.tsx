@@ -46,7 +46,7 @@ export function ArticleForm({ initial }: Props) {
       const formData = new FormData();
       formData.append("file", file);
       const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({ error: "圖片太大或格式不支援，請壓縮後再試" }));
       if (!res.ok) throw new Error(data.error);
       setCoverImage(data.url);
     } catch (err) {
@@ -64,7 +64,7 @@ export function ArticleForm({ initial }: Props) {
       const formData = new FormData();
       formData.append("file", file);
       const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({ error: "圖片太大或格式不支援，請壓縮後再試" }));
       if (!res.ok) throw new Error(data.error);
       setSummaryImage(data.url);
     } catch (err) {
