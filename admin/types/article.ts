@@ -10,6 +10,7 @@ export interface Article {
   landing_page_slug: string | null;
   seo_title: string | null;
   seo_description: string | null;
+  cover_image: string | null;
   published_at: string | null;
   created_at: string;
   updated_at: string;
