@@ -211,6 +211,12 @@ export function ArticleForm({ initial }: Props) {
             {uploadingSummary ? "上傳中…" : summaryImage ? "換一張圖" : "上傳摘要圖"}
             <input type="file" accept="image/*" className="hidden" onChange={handleSummaryImageUpload} />
           </label>
+          <input
+            value={summaryImage}
+            onChange={(e) => setSummaryImage(e.target.value)}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="或直接貼上圖片網址"
+          />
         </div>
       </div>
 
