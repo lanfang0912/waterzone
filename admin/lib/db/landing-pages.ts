@@ -1,6 +1,17 @@
 import { supabaseAdmin } from "./client";
 import type { LandingPage } from "@/types";
 
+export async function getPublishedLandingPages(): Promise<LandingPage[]> {
+  const { data, error } = await supabaseAdmin
+    .from("landing_pages")
+    .select("*")
+    .eq("status", "published")
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
 export async function getLandingPages(): Promise<LandingPage[]> {
   const { data, error } = await supabaseAdmin
     .from("landing_pages")
