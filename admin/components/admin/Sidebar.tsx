@@ -12,6 +12,7 @@ const navItems = [
   { href: "/admin/sequences",     label: "系列郵件",      icon: "🔁" },
   { href: "/admin/broadcast",     label: "群發 Email",    icon: "📨" },
   { href: "/admin/email-logs",    label: "Email Logs",    icon: "✉" },
+  { href: "/admin/articles",      label: "部落格文章",    icon: "✍" },
 ];
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
