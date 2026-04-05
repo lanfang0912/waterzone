@@ -41,7 +41,7 @@ export default async function BlogPostPage({ params }: Props) {
             <img
               src={article.cover_image}
               alt={article.title}
-              className="w-full rounded-2xl mb-6 object-cover max-h-80"
+              className="w-full rounded-2xl mb-6 object-contain bg-stone-50"
             />
           )}
           <h1 className="text-2xl font-bold text-stone-900 leading-snug mb-4">
