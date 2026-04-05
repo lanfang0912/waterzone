@@ -54,6 +54,17 @@ export default async function ResourcesPage() {
             </svg>
             追蹤 Facebook 粉專
           </a>
+          <Link
+            href="/newsletter"
+            className="flex items-center justify-center gap-2 w-full bg-stone-800 hover:bg-stone-900
+                       text-white text-sm font-medium px-4 py-3 rounded-2xl transition-colors"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            訂閱電子報
+          </Link>
         </div>
       </div>
 
