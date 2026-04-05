@@ -8,6 +8,11 @@
       "source": "/",
       "has": [{ "type": "host", "value": "gifts.urland.com.tw" }],
       "destination": "/gifts"
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "blog.urland.com.tw" }],
+      "destination": "/blog/:path*"
     }
   ],
   "crons": [
