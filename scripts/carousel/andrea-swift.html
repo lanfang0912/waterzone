@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IG 輪播 – 安德莉亞</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #e8e0d8;
+    font-family: 'Noto Serif TC', serif;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .hint {
+    color: #8a7968;
+    font-size: 13px;
+    font-family: 'Noto Sans TC', sans-serif;
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+
+  /* ── 每張 slide：4:5 比例 1080×1350 → 顯示 405×507 ── */
+  .slide {
+    position: relative;
+    width: 405px;
+    height: 507px;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+    flex-shrink: 0;
+  }
+
+  /* 水彩背景圖（Pollinations.ai）*/
+  .slide .bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+  }
+
+  /* 半透明色層，讓文字易讀 */
+  .slide .overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  /* 文字容器 */
+  .slide .content {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: 36px 34px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* ── 裝飾線 ── */
+  .deco-line {
+    width: 36px;
+    height: 2px;
+    background: currentColor;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  /* ── 頁碼 ── */
+  .page-num {
+    position: absolute;
+    bottom: 22px;
+    right: 28px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    opacity: 0.45;
+    z-index: 3;
+  }
+
+  /* ── 品牌小字 ── */
+  .brand {
+    position: absolute;
+    bottom: 22px;
+    left: 28px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    opacity: 0.45;
+    z-index: 3;
+  }
+
+  /* ════════════════════════════════
+     Slide 1 — 封面
+  ════════════════════════════════ */
+  #s1 .bg {
+    background-image: url('https://image.pollinations.ai/prompt/soft%20watercolor%20painting%2C%20pink%20roses%20and%20green%20leaves%2C%20pastel%20botanical%2C%20dreamy%2C%20white%20cream%20background%2C%20no%20text?width=1080&height=1350&nologo=true&seed=42');
+    background-color: #f5ede6;
+  }
+  #s1 .overlay { background: rgba(250,243,237,0.45); }
+  #s1 .content { justify-content: flex-end; padding-bottom: 56px; }
+  #s1 .label {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #a07c6a;
+    margin-bottom: 10px;
+  }
+  #s1 h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #3d2b20;
+    line-height: 1.45;
+    margin-bottom: 10px;
+  }
+  #s1 .sub {
+    font-size: 13px;
+    font-weight: 300;
+    color: #6b4e3d;
+    line-height: 1.7;
+    letter-spacing: 0.05em;
+  }
+
+  /* ════════════════════════════════
+     Slide 2 — 那通電話
+  ════════════════════════════════ */
+  #s2 .bg {
+    background-image: url('https://image.pollinations.ai/prompt/watercolor%20wash%2C%20warm%20peach%20and%20ivory%2C%20delicate%20texture%2C%20minimal%2C%20no%20flowers%2C%20no%20text?width=1080&height=1350&nologo=true&seed=77');
+    background-color: #faf0e8;
+  }
+  #s2 .overlay { background: rgba(252,245,238,0.55); }
+  #s2 .content { justify-content: center; }
+  #s2 .section-tag {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #b08070;
+    margin-bottom: 20px;
+  }
+  #s2 blockquote {
+    font-size: 18px;
+    font-weight: 600;
+    color: #3d2b20;
+    line-height: 1.7;
+    margin-bottom: 22px;
+    border-left: 2px solid #c9a090;
+    padding-left: 16px;
+  }
+  #s2 p {
+    font-size: 13px;
+    font-weight: 300;
+    color: #6b4e3d;
+    line-height: 1.9;
+  }
+
+  /* ════════════════════════════════
+     Slide 3 — 她的人生底色
+  ════════════════════════════════ */
+  #s3 .bg {
+    background-image: url('https://image.pollinations.ai/prompt/soft%20watercolor%2C%20sage%20green%20leaves%20and%20botanicals%2C%20light%20background%2C%20hand%20painted%2C%20no%20text?width=1080&height=1350&nologo=true&seed=33');
+    background-color: #eef2ec;
+  }
+  #s3 .overlay { background: rgba(242,246,240,0.55); }
+  #s3 .content { justify-content: center; }
+  #s3 h2 {
+    font-size: 19px;
+    font-weight: 700;
+    color: #2e3d2a;
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+  #s3 p {
+    font-size: 13px;
+    font-weight: 300;
+    color: #4a5a40;
+    line-height: 2;
+    margin-bottom: 10px;
+  }
+  #s3 .highlight {
+    font-weight: 600;
+    color: #2e3d2a;
+  }
+
+  /* ════════════════════════════════
+     Slide 4 — 最難的選擇
+  ════════════════════════════════ */
+  #s4 .bg {
+    background-image: url('https://image.pollinations.ai/prompt/watercolor%20landscape%2C%20soft%20golden%20field%2C%20warm%20autumn%20tones%2C%20misty%2C%20painterly%2C%20no%20text?width=1080&height=1350&nologo=true&seed=99');
+    background-color: #f5eedd;
+  }
+  #s4 .overlay { background: rgba(250,243,230,0.5); }
+  #s4 .content { justify-content: center; }
+  #s4 .section-tag {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #9a7a40;
+    margin-bottom: 18px;
+  }
+  #s4 h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #3a2e10;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  #s4 .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  #s4 .item .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #c8a050;
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+  #s4 .item p {
+    font-size: 14px;
+    font-weight: 300;
+    color: #4a3a18;
+    line-height: 1.8;
+  }
+
+  /* ════════════════════════════════
+     Slide 5 — 癌症
+  ════════════════════════════════ */
+  #s5 .bg {
+    background-image: url('https://image.pollinations.ai/prompt/watercolor%2C%20soft%20white%20and%20blush%20pink%2C%20delicate%20cherry%20blossoms%2C%20minimal%20japanese%20style%2C%20no%20text?width=1080&height=1350&nologo=true&seed=55');
+    background-color: #faf4f4;
+  }
+  #s5 .overlay { background: rgba(252,245,245,0.5); }
+  #s5 .content { justify-content: center; }
+  #s5 h2 {
+    font-size: 19px;
+    font-weight: 700;
+    color: #3d2020;
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+  #s5 p {
+    font-size: 13px;
+    font-weight: 300;
+    color: #5a3535;
+    line-height: 2;
+    margin-bottom: 12px;
+  }
+  #s5 .em {
+    font-size: 15px;
+    font-weight: 600;
+    color: #3d2020;
+    line-height: 1.7;
+    border-bottom: 1px solid #d4a0a0;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+  }
+
+  /* ════════════════════════════════
+     Slide 6 — 後台那個擁抱
+  ════════════════════════════════ */
+  #s6 .bg {
+    background-image: url('https://image.pollinations.ai/prompt/watercolor%2C%20deep%20dusty%20rose%20and%20mauve%2C%20soft%20abstract%20brushstrokes%2C%20moody%20gentle%2C%20no%20text?width=1080&height=1350&nologo=true&seed=66');
+    background-color: #f0e8ea;
+  }
+  #s6 .overlay { background: rgba(244,236,238,0.5); }
+  #s6 .content { justify-content: center; }
+  #s6 .section-tag {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #9a6070;
+    margin-bottom: 18px;
+  }
+  #s6 blockquote {
+    font-size: 16px;
+    font-weight: 600;
+    color: #3a1e28;
+    line-height: 1.85;
+    margin-bottom: 20px;
+    padding-left: 14px;
+    border-left: 2px solid #c08090;
+  }
+  #s6 p {
+    font-size: 13px;
+    color: #6a3a48;
+    line-height: 1.9;
+    font-weight: 300;
+  }
+
+  /* ════════════════════════════════
+     Slide 7 — 那通媒合電話
+  ════════════════════════════════ */
+  #s7 .bg {
+    background-image: url('https://image.pollinations.ai/prompt/watercolor%2C%20warm%20terracotta%20and%20dusty%20orange%2C%20soft%20abstract%2C%20cozy%20autumn%20feeling%2C%20no%20text?width=1080&height=1350&nologo=true&seed=88');
+    background-color: #f5ece0;
+  }
+  #s7 .overlay { background: rgba(250,242,232,0.5); }
+  #s7 .content { justify-content: center; }
+  #s7 h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #3a2010;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  #s7 blockquote {
+    font-size: 14px;
+    font-weight: 300;
+    color: #5a3520;
+    line-height: 1.9;
+    border-left: 2px solid #c08040;
+    padding-left: 14px;
+    margin-bottom: 16px;
+  }
+  #s7 p {
+    font-size: 13px;
+    color: #5a3520;
+    line-height: 1.9;
+    font-weight: 300;
+  }
+
+  /* ════════════════════════════════
+     Slide 8 — 結尾 CTA
+  ════════════════════════════════ */
+  #s8 .bg {
+    background-image: url('https://image.pollinations.ai/prompt/soft%20watercolor%2C%20gentle%20golden%20light%2C%20pink%20and%20warm%20white%2C%20bokeh%20floral%2C%20dreamy%20ethereal%2C%20no%20text?width=1080&height=1350&nologo=true&seed=11');
+    background-color: #fdf5e8;
+  }
+  #s8 .overlay { background: rgba(253,247,235,0.45); }
+  #s8 .content { justify-content: center; text-align: center; align-items: center; }
+  #s8 h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #3d2b10;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  #s8 p {
+    font-size: 13px;
+    font-weight: 300;
+    color: #6a4a20;
+    line-height: 2;
+    margin-bottom: 22px;
+  }
+  #s8 .cta {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: #8a6030;
+    border: 1px solid #c4a060;
+    padding: 8px 22px;
+    border-radius: 20px;
+  }
+</style>
+</head>
+<body>
+
+<p class="hint">↓ 每張截圖存成 PNG，尺寸 405×507（等比 1080×1350）</p>
+
+<!-- ── SLIDE 1 封面 ── -->
+<div class="slide" id="s1">
+  <div class="bg"></div>
+  <div class="overlay"></div>
+  <div class="content">
+    <div class="label">TAYLOR SWIFT ✦ 母親節特輯</div>
+    <h1>她沒有唱過<br>一首歌，<br>卻一路把女兒<br>送進光裡</h1>
+    <p class="sub">泰勒絲背後，那個從未站上舞台的女人</p>
+  </div>
+  <div class="brand">Erica Hsu</div>
+  <div class="page-num">1 / 8</div>
+</div>
+
+<!-- ── SLIDE 2 那通電話 ── -->
+<div class="slide" id="s2">
+  <div class="bg"></div>
+  <div class="overlay"></div>
+  <div class="content">
+    <div class="deco-line" style="color:#b08070"></div>
+    <div class="section-tag">命運的一通電話</div>
+    <blockquote>「我知道你不會喜歡聽這個，但……有個男生。他很帥！」</blockquote>
+    <p>這是媽媽安德莉亞打給正在高壓巡演的泰勒絲時，說的第一句話。</p>
+    <p style="margin-top:10px">沒有人想到，這句「媽媽碎念」，後來真的把女兒推向了命運的拐彎處。</p>
+  </div>
+  <div class="brand">Erica Hsu</div>
+  <div class="page-num">2 / 8</div>
+</div>
+
+<!-- ── SLIDE 3 她的過去 ── -->
+<div class="slide" id="s3">
+  <div class="bg"></div>
+  <div class="overlay"></div>
+  <div class="content">
+    <div class="deco-line" style="color:#4a5a40"></div>
+    <h2>在「泰勒絲媽媽」<br>這個標籤之前，<br>她早就有自己的人生</h2>
+    <p>行銷公司<span class="highlight">副總裁</span>，有漂亮的事業</p>
+    <p>童年在新加坡生活，人生底色豐富</p>
+    <p>後來她辭掉工作，成了全職媽媽</p>
+    <p style="margin-top:14px; font-size:12px; opacity:0.75">履歷上只有短短一行——可真正活過的人都知道，那份重量並不輕。</p>
+  </div>
+  <div class="brand">Erica Hsu</div>
+  <div class="page-num">3 / 8</div>
+</div>
+
+<!-- ── SLIDE 4 最難的選擇 ── -->
+<div class="slide" id="s4">
+  <div class="bg"></div>
+  <div class="overlay"></div>
+  <div class="content">
+    <div class="section-tag">2004 年，泰勒絲 14 歲</div>
+    <h2>她們家做了<br>一個沒有退路的決定</h2>
+    <div class="item"><div class="dot"></div><p>賣掉賓州農場——那是泰勒絲的整個童年</p></div>
+    <div class="item"><div class="dot"></div><p>舉家搬往納許維爾，追一個誰都保證不了的夢</p></div>
+    <div class="item"><div class="dot"></div><p>很多父母說支持，真要賭一次，就不一定了</p></div>
+    <p style="margin-top:16px; font-size:12px; color:#6a5020; opacity:0.8">安德莉亞選了打包、離開、重新開始。</p>
+  </div>
+  <div class="brand">Erica Hsu</div>
+  <div class="page-num">4 / 8</div>
+</div>
+
+<!-- ── SLIDE 5 癌症 ── -->
+<div class="slide" id="s5">
+  <div class="bg"></div>
+  <div class="overlay"></div>
+  <div class="content">
+    <div class="deco-line" style="color:#9a6060"></div>
+    <h2>癌症找上門時，<br>她還是站上了台</h2>
+    <p>2015 年聖誕節，泰勒絲送給媽媽一份禮物：一次完整健檢。</p>
+    <p class="em">回來的結果，是癌症。</p>
+    <p>確診後不久，安德莉亞親手走上頒獎台，把里程碑大獎頒給了女兒。</p>
+    <p style="margin-top:10px; font-size:12px; opacity:0.75">驕傲是真的。心疼也是真的。她就是這樣一個人。</p>
+  </div>
+  <div class="brand">Erica Hsu</div>
+  <div class="page-num">5 / 8</div>
+</div>
+
+<!-- ── SLIDE 6 後台那個擁抱 ── -->
+<div class="slide" id="s6">
+  <div class="bg"></div>
+  <div class="overlay"></div>
+  <div class="content">
+    <div class="section-tag">2024 年，倫敦溫布利後台</div>
+    <blockquote>「我知道你幫助了她們。我知道現在看起來不像，但我知道，你真的幫助了她們。」</blockquote>
+    <p>南港攻擊事件後，泰勒絲見完遇難者家屬，在後台崩潰。</p>
+    <p style="margin-top:10px">走過來抱住她的，是安德莉亞。</p>
+    <p style="margin-top:10px; font-size:12px; opacity:0.8">然後泰勒絲擦乾眼淚，走上台，唱了 3 個半小時。</p>
+  </div>
+  <div class="brand">Erica Hsu</div>
+  <div class="page-num">6 / 8</div>
+</div>
+
+<!-- ── SLIDE 7 媒合那通電話 ── -->
+<div class="slide" id="s7">
+  <div class="bg"></div>
+  <div class="overlay"></div>
+  <div class="content">
+    <div class="deco-line" style="color:#c08040"></div>
+    <h2>一個媽媽的眼光，<br>往往比你想的準</h2>
+    <blockquote>「天啊，他超好的人！<br>而且你知道嗎——他非常愛他媽媽！」</blockquote>
+    <p>安德莉亞打電話給表妹，只問了一個問題：崔維斯是什麼樣的人？</p>
+    <p style="margin-top:10px">那條友誼手環，那句「他愛他媽媽」，讓她決定把這個名字，說給女兒聽。</p>
+    <p style="margin-top:10px; font-size:12px; opacity:0.75">2025 年 8 月，兩人宣布訂婚。</p>
+  </div>
+  <div class="brand">Erica Hsu</div>
+  <div class="page-num">7 / 8</div>
+</div>
+
+<!-- ── SLIDE 8 結尾 CTA ── -->
+<div class="slide" id="s8">
+  <div class="bg"></div>
+  <div class="overlay"></div>
+  <div class="content">
+    <h2>有些媽媽沒有<br>站上舞台，<br>但孩子能走到多亮，<br>答案就在她身上</h2>
+    <p>讀到這裡，你想起了誰？</p>
+    <div class="cta">💬 留言告訴我</div>
+  </div>
+  <div class="brand">Erica Hsu</div>
+  <div class="page-num">8 / 8</div>
+</div>
+
+</body>
+</html>
