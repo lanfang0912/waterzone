@@ -30,7 +30,7 @@ const MIGRATION_LABEL: Record<MigrationStatus, string> = {
   archived: "Archived",
 };
 
-export function LandingPageTable({ initialPages }: { initialPages: LandingPage[] }) {
+export function LandingPageTable({ initialPages, subscriberCounts = {} }: { initialPages: LandingPage[]; subscriberCounts?: Record<string, number> }) {
   const router = useRouter();
   const [pages, setPages] = useState(initialPages);
   const [search, setSearch] = useState("");
@@ -119,13 +119,14 @@ export function LandingPageTable({ initialPages }: { initialPages: LandingPage[]
               <th className="text-left px-4 py-3 text-gray-600 font-medium">類型</th>
               <th className="text-left px-4 py-3 text-gray-600 font-medium">遷移狀態</th>
               <th className="text-left px-4 py-3 text-gray-600 font-medium">狀態</th>
+              <th className="text-right px-4 py-3 text-gray-600 font-medium">訂閱人數</th>
               <th className="text-right px-4 py-3 text-gray-600 font-medium">操作</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
                   沒有符合條件的頁面
                 </td>
               </tr>
@@ -151,6 +152,11 @@ export function LandingPageTable({ initialPages }: { initialPages: LandingPage[]
                   <td className="px-4 py-3">
                     <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${STATUS_COLOR[page.status]}`}>
                       {STATUS_LABEL[page.status]}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <span className="text-sm font-medium text-gray-700">
+                      {(subscriberCounts[page.slug] ?? 0).toLocaleString()}
                     </span>
                   </td>
                   <td className="px-4 py-3">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getLandingPages } from "@/lib/db/landing-pages";
+import { getSubscriberCountsBySlug } from "@/lib/db/subscribers";
 import { LandingPageTable } from "@/components/admin/LandingPageTable";
 import { ImportFromNotionButton } from "@/components/admin/ImportFromNotionButton";
 
@@ -7,7 +8,10 @@ export const metadata = { title: "Landing Pages | 悠藍電子報管理系統" }
 export const dynamic = "force-dynamic";
 
 export default async function LandingPagesPage() {
-  const pages = await getLandingPages();
+  const [pages, subscriberCounts] = await Promise.all([
+    getLandingPages(),
+    getSubscriberCountsBySlug(),
+  ]);
 
   return (
     <div>
@@ -28,7 +32,7 @@ export default async function LandingPagesPage() {
         </div>
       </div>
 
-      <LandingPageTable initialPages={pages} />
+      <LandingPageTable initialPages={pages} subscriberCounts={subscriberCounts} />
     </div>
   );
 }

@@ -95,6 +95,20 @@ export async function deleteSubscriber(id: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+export async function getSubscriberCountsBySlug(): Promise<Record<string, number>> {
+  const { data, error } = await supabaseAdmin
+    .from("subscribers")
+    .select("landing_page_slug");
+
+  if (error || !data) return {};
+
+  return data.reduce<Record<string, number>>((acc, row) => {
+    const slug = row.landing_page_slug;
+    if (slug) acc[slug] = (acc[slug] ?? 0) + 1;
+    return acc;
+  }, {});
+}
+
 export async function getSubscriberCount(landing_page_slug: string): Promise<number> {
   const { count, error } = await supabaseAdmin
     .from("subscribers")
