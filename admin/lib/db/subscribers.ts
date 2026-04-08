@@ -95,6 +95,16 @@ export async function deleteSubscriber(id: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+export async function getSubscriberCount(landing_page_slug: string): Promise<number> {
+  const { count, error } = await supabaseAdmin
+    .from("subscribers")
+    .select("*", { count: "exact", head: true })
+    .eq("landing_page_slug", landing_page_slug);
+
+  if (error) return 0;
+  return count ?? 0;
+}
+
 export async function markNotionSynced(id: string): Promise<void> {
   const { error } = await supabaseAdmin
     .from("subscribers")

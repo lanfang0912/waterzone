@@ -7,9 +7,10 @@ type Props = {
   subtitle?: string;
   slug: string;
   theme: Theme;
+  subscriberCount?: number;
 };
 
-export function HeroSection({ title, subtitle, theme }: Props) {
+export function HeroSection({ title, subtitle, theme, subscriberCount }: Props) {
   return (
     <section className="text-center pt-16 pb-10">
       <div
@@ -31,6 +32,15 @@ export function HeroSection({ title, subtitle, theme }: Props) {
         >
           {subtitle}
         </p>
+      )}
+      {subscriberCount != null && subscriberCount > 0 && (
+        <div
+          className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full mb-8"
+          style={{ background: `${theme.tagBorder}33`, color: theme.tagColor, fontSize: 13 }}
+        >
+          <span>👥</span>
+          <span>已有 <strong>{subscriberCount.toLocaleString()}</strong> 人訂閱</span>
+        </div>
       )}
     </section>
   );
