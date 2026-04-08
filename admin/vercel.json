@@ -3,6 +3,14 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install --legacy-peer-deps",
+  "redirects": [
+    {
+      "source": "/blog/:path+",
+      "has": [{ "type": "host", "value": "blog.urland.com.tw" }],
+      "destination": "/:path+",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/",
