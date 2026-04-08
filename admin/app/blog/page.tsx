@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { getPublishedArticles } from "@/lib/db/articles";
 
 export const metadata = {
@@ -10,6 +11,9 @@ export const dynamic = "force-dynamic";
 
 export default async function BlogPage() {
   const articles = await getPublishedArticles();
+  const headersList = await headers();
+  const host = headersList.get("host") ?? "";
+  const isBlogSubdomain = host.startsWith("blog.");
 
   return (
     <main className="min-h-screen bg-stone-50">
@@ -35,7 +39,7 @@ export default async function BlogPage() {
             {articles.map((article) => (
               <Link
                 key={article.id}
-                href={`/blog/${article.slug}`}
+                href={isBlogSubdomain ? `/${article.slug}` : `/blog/${article.slug}`}
                 className="group block bg-white rounded-2xl border border-stone-100 overflow-hidden
                            hover:border-stone-300 hover:shadow-sm transition-all duration-200"
               >

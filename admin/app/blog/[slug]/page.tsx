@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { headers } from "next/headers";
 import type { Metadata } from "next";
 import { getArticleBySlug } from "@/lib/db/articles";
 import { getLandingPageBySlug } from "@/lib/db/landing-pages";
@@ -23,6 +24,11 @@ export default async function BlogPostPage({ params }: Props) {
   const article = await getArticleBySlug(slug);
   if (!article || article.status !== "published") notFound();
 
+  const headersList = await headers();
+  const host = headersList.get("host") ?? "";
+  const isBlogSubdomain = host.startsWith("blog.");
+  const backHref = isBlogSubdomain ? "/" : "/blog";
+
   const landingPage = article.landing_page_slug
     ? await getLandingPageBySlug(article.landing_page_slug)
     : null;
@@ -31,7 +37,7 @@ export default async function BlogPostPage({ params }: Props) {
     <main className="min-h-screen bg-stone-50">
       <div className="max-w-2xl mx-auto px-6 py-12">
         {/* Back */}
-        <Link href="/blog" className="text-sm text-stone-400 hover:text-stone-600 mb-8 inline-block">
+        <Link href={backHref} className="text-sm text-stone-400 hover:text-stone-600 mb-8 inline-block">
           ← 所有文章
         </Link>
 
